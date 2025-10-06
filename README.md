@@ -38,9 +38,29 @@ Use it to:
 
 ---
 
-## 📦 Installation
+## 📲 Sample App
+
+[![Latest Release](https://img.shields.io/github/v/release/pingpongboss/compose-exploded-layers?color=brightgreen&label=release)](https://github.com/pingpongboss/compose-exploded-layers/releases)
+
+Try out the sample app to see exploded layers in action:
+
+- **Download the latest APK** from the release assets.
+- Or **build and install locally** using: `./gradlew :sample:installDebug` (you can also run the
+  sample configuration directly from Android Studio.)
+
+The [`sample/`](sample) module demonstrates:
+
+* Interactive explosion control via sliders
+* Layer depth visualizations
+* How to mark existing Composables with distinct visual layers
+
+---
+
+## 📦 Integration
 
 [![JitPack](https://jitpack.io/v/pingpongboss/compose-exploded-layers.svg)](https://jitpack.io/#pingpongboss/compose-exploded-layers)
+
+Add the library to your project with 2 easy steps.
 
 **Step 1.** Add the JitPack repository to your build file:
 
@@ -66,7 +86,8 @@ dependencies {
 
 *💡 Tip: Replace `<latest-version>` with the version shown on the badge above.*
 
-*ℹ️ For more details, see [JitPack](https://jitpack.io/#pingpongboss/compose-exploded-layers)*.
+*ℹ️ For more details, visit
+the repo's [main JitPack page](https://jitpack.io/#pingpongboss/compose-exploded-layers)*.
 
 ---
 
@@ -74,17 +95,15 @@ dependencies {
 
 ```kotlin
 @Composable
-fun ExplodedLayersPreview() {
+fun MyCustomButton() {
     val state = rememberExplodedLayersState()
 
     ExplodedLayersRoot(state) {
         Box(
-            Modifier.background(Color.Red) // 1st layer.
-                .separateLayer().background(Color.Blue) // 2nd layer.
+            Modifier.background(Color.Red) // Base layer.
+                .separateLayer().background(Color.Blue) // Middle layer.
         ) {
-            SeparateLayer {
-                Text("Hello world") // 3rd layer.
-            }
+            SeparateLayer { Text("Hello world") } // Top layer.
         }
     }
 }
@@ -115,18 +134,6 @@ fun ExplodedLayersPreview() {
 
 ---
 
-## 🧪 Sample App
-
-Check out the [`sample/`](sample) module for:
-
-* Interactive explosion control via sliders
-* Layer depth previews
-* Examples of how to mark existing Composables with separate layers
-
-Run it directly from Android Studio to explore how it works.
-
----
-
 ## 🤝 Contributing
 
 Contributions welcome!
@@ -134,7 +141,7 @@ To get started:
 
 1. Fork the repo
 2. Create a new feature branch
-3. Add your implementation + preview demo
+3. Add your implementation and test with the sample app
 4. Submit a Pull Request ✨
 
 Please follow the existing code style and include KDoc for new public APIs.
@@ -149,6 +156,10 @@ Please follow the existing code style and include KDoc for new public APIs.
   [Open an issue](https://github.com/pingpongboss/compose-exploded-layers/issues)
 * 🧠 **Author:**
   [Mark Wei](https://www.linkedin.com/in/markwei/)
+* ✨ **Inspiration:**
+    * [Alvish Baldha - Keycap Button (Dribbble)](https://dribbble.com/shots/25117095)
+    * [Clint Hess - Button Hover Effects (Dribbble)](https://dribbble.com/shots/25326661-Button-Hover-Effects)
+    * [Syntax - CSS Challenge (Youtube)](https://www.youtube.com/watch?v=xtRx-aNrNe8)
 
 ---
 
