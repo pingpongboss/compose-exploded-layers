@@ -49,7 +49,8 @@ private val LocalInOverlay = compositionLocalOf { false }
  * This root composable also supports **interactive offset dragging** when
  * [ExplodedLayersState.interactive] is `true`. Users can click-and-drag anywhere within its bounds
  * to dynamically adjust the explosion offset in real time. Dragging is powered by
- * [Modifier.draggable2D] and smoothed by an internal sensitivity constant ([DRAG_SENSITIVITY]).
+ * [Modifier.draggable2D][androidx.compose.foundation.gestures.draggable2D] and smoothed by an
+ * internal sensitivity constant ([DRAG_SENSITIVITY]).
  *
  * Example usage:
  * ```
@@ -172,10 +173,19 @@ fun ExplodedLayersRoot(
 }
 
 /**
- * Marks the nodes below this modifier as belonging in a separate layer. When "exploded", the
- * separate layer may be clipped by Modifiers before it.
+ * Marks all subsequent nodes as belonging to a separate visual layer.
  *
- * Only has an effect when applied to a Composable nested in a [ExplodedLayersRoot].
+ * This modifier only has an effect when applied within an [ExplodedLayersRoot]. When the layout is
+ * exploded, the separated layer is offset according to the configured [ExplodedLayersState.offset]
+ * and [ExplodedLayersState.spread].
+ *
+ * Rendering note: Because the separation occurs after all preceding modifiers, the new layer may be
+ * clipped by any prior [Modifier.clip][androidx.compose.ui.draw.clip]. If a layer boundary must be
+ * defined after a clip modifier in the same modifier chain, wrap the subsequent modifiers and
+ * content in a nested [Box], and apply [SeparateLayer] to that box instead.
+ *
+ * @return A [Modifier] that marks subsequent nodes as a separate layer within the current
+ *   [ExplodedLayersRoot].
  */
 @Composable
 fun Modifier.separateLayer(): Modifier {
@@ -193,10 +203,19 @@ fun Modifier.separateLayer(): Modifier {
 }
 
 /**
- * Marks its composable children as belonging in a separate layer. When "exploded", the separate
- * layer will be rendered in a top-level overlay to prevent it from being clipped by its parents.
+ * Marks the given [content] as belonging to a separate visual layer.
  *
- * Only has an effect when nested in a [ExplodedLayersRoot].
+ * This composable only has an effect when placed within an [ExplodedLayersRoot]. When the layout is
+ * exploded, the separated layer is offset according to the configured [ExplodedLayersState.offset]
+ * and [ExplodedLayersState.spread].
+ *
+ * Rendering note: When exploded, this layer is rendered in a top-level overlay, allowing it to
+ * escape clipping effects applied by ancestor modifiers. Because this layer is drawn independently
+ * of its parent hierarchy, its exploded appearance may differ slightly from its collapsed state.
+ * This can occur if the content draws beyond its bounds or relies on clipping or transformation
+ * behavior inherited from its parents.
+ *
+ * @param content The composable content to render in a separate layer.
  */
 @Composable
 fun SeparateLayer(content: @Composable () -> Unit) {
@@ -274,8 +293,9 @@ private fun Modifier.skew(state: ExplodedLayersState): Modifier {
  *
  * When [interactive] is `true`, users can click and drag directly within the [ExplodedLayersRoot]
  * to dynamically adjust the [offset] at runtime, providing an intuitive way to explore different
- * explosion directions. Dragging is enabled through an internal [Modifier.draggable2D] modifier
- * that updates [offset] continuously as the pointer moves.
+ * explosion directions. Dragging is enabled through an internal
+ * [Modifier.draggable2D][androidx.compose.foundation.gestures.draggable2D] modifier that updates
+ * [offset] continuously as the pointer moves.
  *
  * Typical usage:
  * ```
@@ -290,6 +310,9 @@ private fun Modifier.skew(state: ExplodedLayersState): Modifier {
  *   `true`.
  * @param offset The base offset applied between each consecutive layer when fully exploded.
  *   Negative or positive values determine the separation direction along the X and Y axes.
+ * @param initialSpread The normalized initial expansion factor of the explosion, from `0f` (fully
+ *   collapsed) to `1f` (fully exploded). This defines the starting visual state of the exploded
+ *   layers before any animation or user interaction occurs. Defaults to `1f`.
  * @return A remembered [ExplodedLayersState] instance.
  */
 @Composable

@@ -145,7 +145,8 @@ private fun KeycapButtonInternal(
     // Glass layer is the button.
     Box(
         modifier =
-            modifier.semantics { role = Role.Button }
+            modifier
+                .semantics { role = Role.Button }
                 .padding(GLASS_BUTTON_OUTER_PADDING)
                 .drawOuterShadow(
                     enabled = drawOuterShadow,
