@@ -7,6 +7,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +15,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -33,20 +37,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.github.pingpongboss.explodedlayers.ExplodedLayersState
 import com.github.pingpongboss.explodedlayers.rememberExplodedLayersState
 import com.github.pingpongboss.explodedlayers.sample.buttons.hovereffects.CreepButton
 import com.github.pingpongboss.explodedlayers.sample.buttons.hovereffects.ExciteButton
@@ -73,7 +77,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             ExplodedLayersSampleTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    SampleGrid(innerPadding)
+                    SampleRoot(innerPadding)
                 }
             }
         }
@@ -81,11 +85,14 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-private fun SampleGrid(innerPadding: PaddingValues) {
+private fun SampleRoot(innerPadding: PaddingValues) {
     Column(
         modifier =
-            Modifier.verticalScroll(rememberScrollState())
-                .padding(innerPadding)
+            Modifier.padding(
+                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
+                    top = innerPadding.calculateTopPadding(),
+                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
+                )
                 .padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -100,41 +107,19 @@ private fun SampleGrid(innerPadding: PaddingValues) {
             rememberExplodedLayersState(
                 offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET,
                 interactive = true,
+                initialSpread = 0f,
             )
-        var explodeLayersProgress1 by rememberSaveable { mutableFloatStateOf(0f) }
-        explodedLayersState1.spread = explodeLayersProgress1
 
         val explodedLayersState2 =
             rememberExplodedLayersState(
                 offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET,
                 interactive = false,
+                initialSpread = 0f,
             )
-        var explodeLayersProgress2 by rememberSaveable { mutableFloatStateOf(0f) }
-        explodedLayersState2.spread = explodeLayersProgress2
 
         var isAnimating by remember { mutableStateOf(false) }
         val progressAnim = remember { Animatable(0f) }
-        LaunchedEffect(isAnimating) {
-            if (isAnimating) {
-                launch {
-                    while (true) {
-                        progressAnim.animateTo(
-                            targetValue = 1f,
-                            animationSpec = tween(durationMillis = 2000),
-                        )
-                        delay(1.seconds)
-                        progressAnim.animateTo(
-                            targetValue = MIN_SLIDER_VALUE,
-                            animationSpec = tween(durationMillis = 2000),
-                        )
-                        delay(1.seconds)
-                    }
-                }
-            }
-        }
-        if (isAnimating) {
-            explodeLayersProgress1 = progressAnim.value
-        }
+        InfiniteAnimationEffect(isAnimating, progressAnim) { explodedLayersState1.spread = it }
 
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             val scope = rememberCoroutineScope()
@@ -144,7 +129,7 @@ private fun SampleGrid(innerPadding: PaddingValues) {
                     isAnimating = !isAnimating
                     scope.launch {
                         progressAnim.snapTo(0f)
-                        explodeLayersProgress1 = 0f
+                        explodedLayersState1.spread = 0f
                     }
                 }
             ) {
@@ -163,10 +148,10 @@ private fun SampleGrid(innerPadding: PaddingValues) {
                         progressAnim.snapTo(0f)
 
                         explodedLayersState1.offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET
-                        explodeLayersProgress1 = 0f
+                        explodedLayersState1.spread = 0f
 
                         explodedLayersState2.offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET
-                        explodeLayersProgress2 = 0f
+                        explodedLayersState2.spread = 0f
                     }
                 }
             ) {
@@ -176,136 +161,163 @@ private fun SampleGrid(innerPadding: PaddingValues) {
             }
         }
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            val windowInfo = LocalWindowInfo.current
-            val columns =
-                with(LocalDensity.current) {
-                    when {
-                        windowInfo.containerSize.width.toDp() < 600.dp -> 2
-                        else -> 4
-                    }
-                }
+        Box(
+            modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f).fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            SampleGrid(
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+                explodedLayersState1 = explodedLayersState1,
+                explodedLayersState2 = explodedLayersState2,
+            )
+        }
+    }
+}
 
-            Grid(
-                columns = columns,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                line { Spacer(Modifier.height(16.dp)) }
-
-                line {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(text = "Explode layers:")
-
-                        Slider(
-                            value = explodeLayersProgress1,
-                            onValueChange = { explodeLayersProgress1 = it },
-                            onValueChangeFinished = {
-                                if (explodeLayersProgress1 == MIN_SLIDER_VALUE) {
-                                    explodeLayersProgress1 = 0f
-                                }
-                            },
-                            valueRange = MIN_SLIDER_VALUE..1f,
-                        )
-                    }
-                }
-
-                line {
-                    KeycapButton(
-                        label = "+ Add to cart",
-                        onClick = {},
-                        modifier =
-                            Modifier.padding(
-                                vertical = if (isAnimating) 16.dp * explodeLayersProgress1 else 0.dp
-                            ),
-                        explodedLayersState = explodedLayersState1,
+@Composable
+private fun InfiniteAnimationEffect(
+    enabled: Boolean,
+    animatable: Animatable<Float, AnimationVector1D>,
+    onAnimationUpdate: (Float) -> Unit = {},
+) {
+    LaunchedEffect(enabled) {
+        if (enabled) {
+            launch {
+                while (true) {
+                    animatable.animateTo(
+                        targetValue = 1f,
+                        animationSpec = tween(durationMillis = 2000),
                     )
-                }
-
-                line { Spacer(Modifier.height(16.dp)) }
-
-                line {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(text = "Explode layers:")
-
-                        Slider(
-                            value = explodeLayersProgress2,
-                            onValueChange = { explodeLayersProgress2 = it },
-                            onValueChangeFinished = {
-                                if (explodeLayersProgress2 == MIN_SLIDER_VALUE) {
-                                    explodeLayersProgress2 = 0f
-                                }
-                            },
-                            valueRange = MIN_SLIDER_VALUE..1f,
-                        )
-                    }
-                }
-
-                item {
-                    LayersButton(
-                        label = "Layers",
-                        colors = listOf(Color(0xff52b29c), Color(0xFFF5BC45), Color(0xFF6079F6)),
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
+                    delay(1.seconds)
+                    animatable.animateTo(
+                        targetValue = MIN_SLIDER_VALUE,
+                        animationSpec = tween(durationMillis = 2000),
                     )
-                }
-
-                item {
-                    ShadyButton(
-                        label = "Shady",
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
-                    )
-                }
-
-                item {
-                    GradientButton(
-                        label = "Gradient",
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
-                    )
-                }
-
-                item {
-                    ExpandButton(
-                        label = "Expand",
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
-                    )
-                }
-
-                item {
-                    CreepButton(
-                        label = "Creep",
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
-                    )
-                }
-
-                item {
-                    ExciteButton(
-                        label = "Excite",
-                        onClick = {},
-                        explodedLayersState = explodedLayersState2,
-                    )
+                    delay(1.seconds)
                 }
             }
+        }
+    }
+    if (enabled) {
+        onAnimationUpdate(animatable.value)
+    }
+}
+
+@Composable
+private fun SampleGrid(
+    modifier: Modifier = Modifier,
+    explodedLayersState1: ExplodedLayersState,
+    explodedLayersState2: ExplodedLayersState,
+) {
+    val windowInfo = LocalWindowInfo.current
+    val columns =
+        with(LocalDensity.current) {
+            when {
+                windowInfo.containerSize.width.toDp() < 600.dp -> 2
+                else -> 4
+            }
+        }
+
+    Grid(
+        columns = columns,
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        line { Spacer(Modifier.height(16.dp)) }
+
+        line {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "Explode layers:")
+
+                Slider(
+                    value = explodedLayersState1.spread,
+                    onValueChange = { explodedLayersState1.spread = it },
+                    onValueChangeFinished = {
+                        if (explodedLayersState1.spread == MIN_SLIDER_VALUE) {
+                            explodedLayersState1.spread = 0f
+                        }
+                    },
+                    valueRange = MIN_SLIDER_VALUE..1f,
+                )
+            }
+        }
+
+        line {
+            KeycapButton(
+                label = "+ Add to cart",
+                onClick = {},
+                modifier = Modifier.padding(vertical = 16.dp * explodedLayersState1.spread),
+                explodedLayersState = explodedLayersState1,
+            )
+        }
+
+        line { Spacer(Modifier.height(16.dp)) }
+
+        line {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(text = "Explode layers:")
+
+                Slider(
+                    value = explodedLayersState2.spread,
+                    onValueChange = { explodedLayersState2.spread = it },
+                    onValueChangeFinished = {
+                        if (explodedLayersState2.spread == MIN_SLIDER_VALUE) {
+                            explodedLayersState2.spread = 0f
+                        }
+                    },
+                    valueRange = MIN_SLIDER_VALUE..1f,
+                )
+            }
+        }
+
+        item {
+            LayersButton(
+                label = "Layers",
+                colors = listOf(Color(0xff52b29c), Color(0xFFF5BC45), Color(0xFF6079F6)),
+                onClick = {},
+                explodedLayersState = explodedLayersState2,
+            )
+        }
+
+        item {
+            ShadyButton(label = "Shady", onClick = {}, explodedLayersState = explodedLayersState2)
+        }
+
+        item {
+            GradientButton(
+                label = "Gradient",
+                onClick = {},
+                explodedLayersState = explodedLayersState2,
+            )
+        }
+
+        item {
+            ExpandButton(label = "Expand", onClick = {}, explodedLayersState = explodedLayersState2)
+        }
+
+        item {
+            CreepButton(label = "Creep", onClick = {}, explodedLayersState = explodedLayersState2)
+        }
+
+        item {
+            ExciteButton(label = "Excite", onClick = {}, explodedLayersState = explodedLayersState2)
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun SampleGridPreview() {
-    ExplodedLayersSampleTheme { SampleGrid(PaddingValues.Zero) }
+fun SampleRootPreview() {
+    ExplodedLayersSampleTheme { SampleRoot(PaddingValues.Zero) }
 }
