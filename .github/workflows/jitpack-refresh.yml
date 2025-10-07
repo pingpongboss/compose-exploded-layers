@@ -1,0 +1,15 @@
+name: Refresh JitPack Repository
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh JitPack tag list
+        run: |
+          REPO="pingpongboss/compose-exploded-layers"
+          echo "Refreshing JitPack for $REPO"
+          curl -s "https://jitpack.io/#${REPO}" > /dev/null
