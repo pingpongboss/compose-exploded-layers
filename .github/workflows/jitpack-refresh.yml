@@ -8,18 +8,9 @@ jobs:
   jitpack:
     runs-on: ubuntu-latest
     steps:
-      - name: Get release tag
-        id: vars
-        run: |
-          TAG="${GITHUB_REF_NAME}"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
-          echo "Detected release tag: $TAG"
-
       - name: Trigger JitPack build
         run: |
-          TAG="${{ steps.vars.outputs.tag }}"
-          REPO="pingpongboss/compose-exploded-layers"
-          API_URL="https://jitpack.io/api/builds/com.github.${REPO}/${TAG}"
+          API_URL="https://jitpack.io/api/builds/com.github.pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}"
 
           echo "Triggering JitPack build for ${REPO}:${TAG}"
           curl -s "${API_URL}" > /dev/null
@@ -27,22 +18,20 @@ jobs:
 
       - name: Stream JitPack build log
         run: |
-          TAG="${{ steps.vars.outputs.tag }}"
-          REPO="pingpongboss/compose-exploded-layers"
-          LOG_URL="https://jitpack.io/com/github/${REPO}/${TAG}/build.log"
-          STATUS_URL="https://jitpack.io/api/builds/com.github.${REPO}/${TAG}"
+          LOG_URL="https://jitpack.io/com/github/pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}/build.log"
+          STATUS_URL="https://jitpack.io/api/builds/com.github.pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}"
 
           echo "Streaming build logs from: ${LOG_URL}"
           echo
 
           # Poll the log every 5 seconds until the build finishes
           STATUS="building"
-          while [ "$STATUS" = "building" ] || [ "$STATUS" = "queued" ] || [ "$STATUS" = "null" ]; do
+          while [[ "$STATUS" != "ok" && "$STATUS" != "Error" ]]; do
             curl -s "${LOG_URL}" | tail -n 20
             echo "----------------------------------------------"
             STATUS=$(curl -s "${STATUS_URL}" | jq -r '.status')
             echo "Current status: ${STATUS}"
-            sleep 5
+            sleep 10
           done
 
           echo "----------------------------------------------"
