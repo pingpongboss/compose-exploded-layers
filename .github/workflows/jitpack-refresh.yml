@@ -1,15 +1,56 @@
-name: Refresh JitPack Repository
+name: Trigger JitPack Build
 
 on:
   release:
     types: [published]
 
 jobs:
-  refresh:
+  jitpack:
     runs-on: ubuntu-latest
     steps:
-      - name: Refresh JitPack tag list
+      - name: Get release tag
+        id: vars
         run: |
+          TAG="${GITHUB_REF_NAME}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Detected release tag: $TAG"
+
+      - name: Trigger JitPack build
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
           REPO="pingpongboss/compose-exploded-layers"
-          echo "Refreshing JitPack for $REPO"
-          curl -s "https://jitpack.io/#${REPO}" > /dev/null
+          API_URL="https://jitpack.io/api/builds/com.github.${REPO}/${TAG}"
+
+          echo "Triggering JitPack build for ${REPO}:${TAG}"
+          curl -s "${API_URL}" > /dev/null
+          echo "Build triggered. Waiting for logs..."
+
+      - name: Stream JitPack build log
+        run: |
+          TAG="${{ steps.vars.outputs.tag }}"
+          REPO="pingpongboss/compose-exploded-layers"
+          LOG_URL="https://jitpack.io/com/github/${REPO}/${TAG}/build.log"
+          STATUS_URL="https://jitpack.io/api/builds/com.github.${REPO}/${TAG}"
+
+          echo "Streaming build logs from: ${LOG_URL}"
+          echo
+
+          # Poll the log every 5 seconds until the build finishes
+          STATUS="building"
+          while [ "$STATUS" = "building" ] || [ "$STATUS" = "queued" ] || [ "$STATUS" = "null" ]; do
+            curl -s "${LOG_URL}" | tail -n 20
+            echo "----------------------------------------------"
+            STATUS=$(curl -s "${STATUS_URL}" | jq -r '.status')
+            echo "Current status: ${STATUS}"
+            sleep 5
+          done
+
+          echo "----------------------------------------------"
+          echo "Final build status: ${STATUS}"
+
+          if [ "$STATUS" != "ok" ]; then
+            echo "❌ JitPack build failed"
+            exit 1
+          fi
+
+          echo "✅ JitPack build succeeded"
