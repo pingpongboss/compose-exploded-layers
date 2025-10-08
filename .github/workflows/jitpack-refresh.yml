@@ -18,24 +18,26 @@ jobs:
 
       - name: Stream JitPack build log
         run: |
-          LOG_URL="https://jitpack.io/com/github/pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}/build.log"
           STATUS_URL="https://jitpack.io/api/builds/com.github.pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}"
+          LOG_URL="https://jitpack.io/com/github/pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}/build.log"
 
-          echo "Streaming build logs from: ${LOG_URL}"
+          echo "Streaming build logs at: ${LOG_URL}"
           echo
 
-          # Poll the log every 5 seconds until the build finishes
-          STATUS="building"
-          while [[ "$STATUS" != "ok" && "$STATUS" != "Error" ]]; do
-            curl -s "${LOG_URL}" | tail -n 20
+          while true; do
+            echo "Checking status..."
+            STATUS=$(curl -s "$STATUS_URL" | jq -r '.status')
+            echo "Status is: $STATUS"
+            
+            [[ "$STATUS" == "ok" || "$STATUS" == "Error" ]] && break
+
+            echo "Checking again in 2 minutes"
             echo "----------------------------------------------"
-            STATUS=$(curl -s "${STATUS_URL}" | jq -r '.status')
-            echo "Current status: ${STATUS}"
-            sleep 10
+            sleep 120
           done
 
-          echo "----------------------------------------------"
           echo "Final build status: ${STATUS}"
+          echo "View build logs at: ${LOG_URL}"
 
           if [ "$STATUS" != "ok" ]; then
             echo "❌ JitPack build failed"
