@@ -157,6 +157,7 @@ section.
 
 * [Mark Wei](https://www.linkedin.com/in/markwei/): Authored the original library and Android sample
   app
+* [sadellie](https://sadellie.github.io/): Added KMP support to the library.
 
 ---
 

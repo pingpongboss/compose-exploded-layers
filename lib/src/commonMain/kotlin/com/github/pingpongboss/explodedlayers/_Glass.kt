@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -133,7 +134,7 @@ private fun DrawScope.drawArrow(center: Offset, direction: Offset) {
     val ortho = Offset(-dir.y, dir.x) * (arrowWidth / 2f)
 
     val path =
-        androidx.compose.ui.graphics.Path().apply {
+        Path().apply {
             moveTo(tip.x, tip.y)
             lineTo(tail.x + ortho.x, tail.y + ortho.y)
             lineTo(tail.x - ortho.x, tail.y - ortho.y)
