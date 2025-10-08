@@ -10,14 +10,6 @@ jobs:
     steps:
       - name: Trigger JitPack build
         run: |
-          API_URL="https://jitpack.io/api/builds/com.github.pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}"
-
-          echo "Triggering JitPack build for ${REPO}:${TAG}"
-          curl -s "${API_URL}" > /dev/null
-          echo "Build triggered. Waiting for logs..."
-
-      - name: Stream JitPack build log
-        run: |
           STATUS_URL="https://jitpack.io/api/builds/com.github.pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}"
           LOG_URL="https://jitpack.io/com/github/pingpongboss/compose-exploded-layers/${{ github.event.release.tag_name }}/build.log"
 
