@@ -1,5 +1,7 @@
 pluginManagement {
     repositories {
+        // wasm
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google {
             content {
                 includeGroupByRegex("com\\.android.*")
@@ -13,14 +15,17 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    // disabled for wasm repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
+        // wasm
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google()
         mavenCentral()
     }
 }
 
-rootProject.name = "Exploded Layers"
+// package.json fails to generate due to illegal characters (spaces)
+rootProject.name = "exploded.layers"
 
 include(":lib")
 
