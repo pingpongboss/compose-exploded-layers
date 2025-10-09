@@ -42,17 +42,21 @@ Use it to:
 
 [![Latest Release](https://img.shields.io/github/v/release/pingpongboss/compose-exploded-layers?color=brightgreen&label=release)](https://github.com/pingpongboss/compose-exploded-layers/releases)
 
-Try out the sample app to see exploded layers in action:
+Try out the sample app to see exploded layers in action, and learn by example how to integrate with
+the library.
 
-- **Download the latest APK** from the release assets.
-- Or **build and install locally** using: `./gradlew :sample:installDebug` (you can also run the
+### <img src="https://cdn.simpleicons.org/android/3DDC84" width="18" align="absmiddle" /> Android
+
+- **Download the latest APK** from
+  the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
+- **Build and install locally** using: `./gradlew :sample:installDebug` (you can also run the
   sample configuration directly from Android Studio.)
+- Check-out the code under [`sample/`](sample).
 
-The [`sample/`](sample) module demonstrates:
+### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web
 
-* Interactive explosion control via sliders
-* Layer depth visualizations
-* How to mark existing Composables with distinct visual layers
+- KMP support
+  is [currently being discussed](https://github.com/pingpongboss/compose-exploded-layers/pull/2).
 
 ---
 
@@ -145,6 +149,14 @@ To get started:
 4. Submit a Pull Request ✨
 
 Please follow the existing code style and include KDoc for new public APIs.
+
+### 👥 Contributors
+
+If you are making a non-trivial contribution to the project, feel free to add your name to this
+section.
+
+* [Mark Wei](https://www.linkedin.com/in/markwei/): Authored the original library and Android sample
+  app
 
 ---
 
