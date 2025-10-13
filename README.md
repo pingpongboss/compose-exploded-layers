@@ -60,38 +60,34 @@ the library.
 
 ---
 
-## 📦 Integration
+## 📦 Library Integration
 
-[![JitPack](https://jitpack.io/v/pingpongboss/compose-exploded-layers.svg)](https://jitpack.io/#pingpongboss/compose-exploded-layers)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.github.pingpongboss/compose-exploded-layers?filter=!*alpha)](https://central.sonatype.com/artifact/io.github.pingpongboss/compose-exploded-layers)
 
-Add the library to your project with 2 easy steps.
+**Step 1:** Ensure your Kotlin plugin versions are `2.2.20` or greater.
 
-**Step 1.** Add the JitPack repository to your build file:
+```toml
+# libs.versions.toml
+[versions]
+kotlin = "2.2.20"
 
-```kotlin
-// settings.gradle.kts
-dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-    repositories {
-        mavenCentral()
-        maven { url = uri("https://jitpack.io") }
-    }
-}
+[plugins]
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ```
 
-**Step 2.** Add the latest version of the dependency to your module’s build file:
+**Step 2:** Add the latest version of the library to your module’s build file:
 
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.github.pingpongboss:compose-exploded-layers:<latest-version>")
+    implementation("io.github.pingpongboss:compose-exploded-layers:<latest-version>")
 }
 ````
 
-*💡 Tip: Replace `<latest-version>` with the version shown on the badge above.*
-
-*ℹ️ For more details, visit
-the repo's [main JitPack page](https://jitpack.io/#pingpongboss/compose-exploded-layers)*.
+*💡 Tip: Replace `<latest-version>` with the latest version from the
+library's [Maven Central page](https://central.sonatype.com/artifact/io.github.pingpongboss/compose-exploded-layers)*.
 
 ---
 

@@ -1,3 +1,4 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -9,12 +10,14 @@ plugins {
     alias(libs.plugins.multiplatform)
 
     id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.28.0"
 }
 
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }
+        publishLibraryVariants("release", "debug")
     }
 
     jvm()
@@ -27,6 +30,7 @@ kotlin {
             implementation(compose.foundation)
         }
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
             implementation(libs.androidx.compose.ui)
             implementation(libs.androidx.compose.ui.graphics)
         }
@@ -48,7 +52,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.github.pingpongboss.explodedlayers"
+    namespace = "io.github.pingpongboss"
     compileSdk = 36
 
     defaultConfig {
@@ -74,8 +78,6 @@ android {
     buildFeatures { compose = true }
 }
 
-group = "com.github.pingpongboss"
-
 version =
     runCatching {
             // Try to get the latest annotated or lightweight tag name
@@ -93,38 +95,40 @@ private fun String.runCommand(): String =
         .bufferedReader()
         .readText()
 
-publishing {
-    publications {
-        named<MavenPublication>("kotlinMultiplatform") {
-            this.artifactId = "compose-exploded-layers"
+mavenPublishing {
+    // Define coordinates for the published artifact
+    coordinates(groupId = "io.github.pingpongboss", artifactId = "compose-exploded-layers")
 
-            pom {
-                name.set("Exploded Layers for Jetpack Compose")
-                description.set("Turn any composable into an interactive “3D exploded view”.")
-                url.set("https://github.com/pingpongboss/compose-exploded-layers")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/license/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("com.github.pingpongboss")
-                        name.set("Mark Wei")
-                        email.set("markwei@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set(
-                        "scm:git:git://github.com/pingpongboss/compose-exploded-layers.git"
-                    )
-                    developerConnection.set(
-                        "scm:git:ssh://github.com/pingpongboss/compose-exploded-layers.git"
-                    )
-                    url.set("https://github.com/pingpongboss/compose-exploded-layers")
-                }
+    // Configure POM metadata for the published artifact
+    pom {
+        name.set("Exploded Layers for Jetpack Compose")
+        description.set("Turn any composable into an interactive “3D exploded view”.")
+        url.set("https://github.com/pingpongboss/compose-exploded-layers")
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/license/MIT")
             }
         }
+        developers {
+            developer {
+                id.set("com.github.pingpongboss")
+                name.set("Mark Wei")
+                email.set("markwei@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:git://github.com/pingpongboss/compose-exploded-layers.git")
+            developerConnection.set(
+                "scm:git:ssh://github.com/pingpongboss/compose-exploded-layers.git"
+            )
+            url.set("https://github.com/pingpongboss/compose-exploded-layers")
+        }
     }
+
+    // Configure publishing to Maven Central
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    // Enable GPG signing for all publications
+    signAllPublications()
 }
