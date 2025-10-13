@@ -1,15 +1,58 @@
+import com.vanniktech.maven.publish.SonatypeHost
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.library")
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.multiplatform)
 
     id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.28.0"
+}
+
+kotlin {
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_11) }
+        publishLibraryVariants("release", "debug")
+    }
+
+    jvm()
+
+    @OptIn(ExperimentalWasmDsl::class) wasmJs { browser() }
+
+    sourceSets {
+        commonMain.dependencies {
+            implementation(compose.ui)
+            implementation(compose.foundation)
+        }
+        androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
+            implementation(libs.androidx.compose.ui)
+            implementation(libs.androidx.compose.ui.graphics)
+        }
+        jvmMain.dependencies {
+            implementation(compose.ui)
+            implementation(compose.foundation)
+        }
+
+        androidUnitTest.dependencies { implementation(libs.junit) }
+        androidInstrumentedTest.dependencies {
+            implementation(libs.androidx.junit)
+            implementation(libs.androidx.espresso.core)
+            implementation(project.dependencies.platform(libs.androidx.compose.bom))
+            implementation(libs.androidx.compose.ui.test.junit4)
+            implementation(libs.androidx.compose.ui.tooling)
+            implementation(libs.androidx.compose.ui.test.manifest)
+        }
+    }
 }
 
 android {
-    namespace = "com.github.pingpongboss.explodedlayers"
+    namespace = "io.github.pingpongboss"
     compileSdk = 36
 
     defaultConfig {
@@ -32,10 +75,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlin { compilerOptions { jvmTarget = JvmTarget.fromTarget("11") } }
     buildFeatures { compose = true }
-
-    publishing { singleVariant("release") {} }
 }
 
 version =
@@ -47,7 +87,7 @@ version =
             "0.0.0-SNAPSHOT" // fallback if no tags yet
         }
 
-fun String.runCommand(): String =
+private fun String.runCommand(): String =
     ProcessBuilder(*split(" ").toTypedArray())
         .redirectErrorStream(true)
         .start()
@@ -55,60 +95,40 @@ fun String.runCommand(): String =
         .bufferedReader()
         .readText()
 
-publishing {
-    publications {
-        create<MavenPublication>("release") {
-            // For Android:
-            afterEvaluate { from(components["release"]) }
+mavenPublishing {
+    // Define coordinates for the published artifact
+    coordinates(groupId = "io.github.pingpongboss", artifactId = "compose-exploded-layers")
 
-            groupId = "com.github.pingpongboss"
-            artifactId = "compose-exploded-layers"
-
-            pom {
-                name.set("Exploded Layers for Jetpack Compose")
-                description.set("Turn any composable into an interactive “3D exploded view”.")
-                url.set("https://github.com/pingpongboss/compose-exploded-layers")
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://opensource.org/license/MIT")
-                    }
-                }
-                developers {
-                    developer {
-                        id.set("com.github.pingpongboss")
-                        name.set("Mark Wei")
-                        email.set("markwei@gmail.com")
-                    }
-                }
-                scm {
-                    connection.set(
-                        "scm:git:git://github.com/pingpongboss/compose-exploded-layers.git"
-                    )
-                    developerConnection.set(
-                        "scm:git:ssh://github.com/pingpongboss/compose-exploded-layers.git"
-                    )
-                    url.set("https://github.com/pingpongboss/compose-exploded-layers")
-                }
+    // Configure POM metadata for the published artifact
+    pom {
+        name.set("Exploded Layers for Jetpack Compose")
+        description.set("Turn any composable into an interactive “3D exploded view”.")
+        url.set("https://github.com/pingpongboss/compose-exploded-layers")
+        licenses {
+            license {
+                name.set("MIT License")
+                url.set("https://opensource.org/license/MIT")
             }
         }
+        developers {
+            developer {
+                id.set("com.github.pingpongboss")
+                name.set("Mark Wei")
+                email.set("markwei@gmail.com")
+            }
+        }
+        scm {
+            connection.set("scm:git:git://github.com/pingpongboss/compose-exploded-layers.git")
+            developerConnection.set(
+                "scm:git:ssh://github.com/pingpongboss/compose-exploded-layers.git"
+            )
+            url.set("https://github.com/pingpongboss/compose-exploded-layers")
+        }
     }
-}
 
-dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    // Configure publishing to Maven Central
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    // Enable GPG signing for all publications
+    signAllPublications()
 }

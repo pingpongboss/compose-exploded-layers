@@ -24,13 +24,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import kotlin.math.PI
 import kotlin.math.tan
 
 private val LocalState = compositionLocalOf<ExplodedLayersState?> { null }
@@ -256,7 +256,7 @@ private fun Modifier.skew(state: ExplodedLayersState): Modifier {
         val halfLifeY = state.initialOffset.y / 1.5f
 
         drawWithContent {
-            fun tanDeg(d: Float) = tan(Math.toRadians(d.toDouble())).toFloat()
+            fun tanDeg(d: Float) = tan(toRadians(d.toDouble())).toFloat()
 
             val normalizeX = normalize(state.offset.x.toPx(), halfLife = halfLifeX.toPx())
             val normalizeY = normalize(state.offset.y.toPx(), halfLife = halfLifeY.toPx())
@@ -271,7 +271,7 @@ private fun Modifier.skew(state: ExplodedLayersState): Modifier {
             drawIntoCanvas { canvas ->
                 canvas.save()
                 canvas.translate(px, py)
-                canvas.nativeCanvas.skew(tanDeg(degreesX), tanDeg(degreesY))
+                canvas.skew(tanDeg(degreesX), tanDeg(degreesY))
                 canvas.translate(-px, -py)
 
                 // draw the original content under the skew
@@ -408,3 +408,6 @@ object ExplodedLayersDefaults {
      */
     fun offset() = DpOffset(x = -40.dp, y = 40.dp)
 }
+
+// java.Math is not available in kmp
+private fun toRadians(deg: Double): Double = deg / 180.0 * PI
