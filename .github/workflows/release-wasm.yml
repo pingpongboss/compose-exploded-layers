@@ -1,0 +1,58 @@
+name: Publish Wasm Demo
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  publish-wasm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build Wasm production executable
+        run: ./gradlew :samples:wasm:wasmJsBrowserDistribution
+
+      - name: Deploy Wasm demo for this release
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: samples/wasm/build/dist/wasmJs/productionExecutable
+          destination_dir: wasm-demo/${{ github.ref_name }}
+          keep_files: true
+          commit_message: "Deploy Wasm demo for release ${{ github.ref_name }}"
+
+      - name: Generate version index page
+        run: |
+          mkdir -p wasm-demo
+          echo "<html><body><h1>compose-exploded-layers Releases</h1><ul>" > wasm-demo/index.html
+          git fetch origin gh-pages
+          for dir in $(git ls-tree --name-only origin/gh-pages wasm-demo); do
+            if [[ $dir != "index.html" ]]; then
+              echo "<li><a href=\"$dir/\">$dir</a></li>" >> wasm-demo/index.html
+            fi
+          done
+          echo "</ul></body></html>" >> wasm-demo/index.html
+
+      - name: Upload version index
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: wasm-demo
+          destination_dir: wasm-demo
+          keep_files: true
+          commit_message: "Update wasm-demo index page"
