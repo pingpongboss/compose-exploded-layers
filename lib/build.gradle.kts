@@ -7,7 +7,7 @@ plugins {
     id("com.android.library")
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.multiplatform)
-    alias(libs.plugins.multiplatform)
+    alias(libs.plugins.kotlin.multiplatform)
 
     id("maven-publish")
     id("com.vanniktech.maven.publish") version "0.28.0"
