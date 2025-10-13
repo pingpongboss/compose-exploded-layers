@@ -1,0 +1,83 @@
+name: Publish Wasm Demo
+
+on:
+  release:
+    types: [ published ]
+
+permissions:
+  contents: write
+
+jobs:
+  publish-wasm:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build Wasm production executable
+        run: ./gradlew :samples:wasm:wasmJsBrowserDistribution
+
+      - name: Deploy Wasm demo for this release
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: samples/wasm/build/dist/wasmJs/productionExecutable
+          destination_dir: wasm-demo/${{ github.ref_name }}
+          keep_files: true
+          commit_message: "Deploy Wasm demo for release ${{ github.ref_name }}"
+
+      - name: Generate version index page
+        run: |
+          set -e
+          git fetch origin gh-pages || true
+          mkdir -p wasm-demo
+
+          {
+            echo "<!doctype html>"
+            echo "<html lang=\"en\">"
+            echo "<head>"
+            echo "  <meta charset=\"utf-8\"/>"
+            echo "  <title>compose-exploded-layers Wasm Demos</title>"
+            echo "  <style>"
+            echo "    body { font-family: system-ui, sans-serif; margin: 2rem; }"
+            echo "    h1 { margin-bottom: 1rem; }"
+            echo "    ul { line-height: 1.8; list-style: none; padding-left: 0; }"
+            echo "    li::before { content: '• '; color: #555; }"
+            echo "    a { text-decoration: none; color: #0366d6; }"
+            echo "    a:hover { text-decoration: underline; }"
+            echo "  </style>"
+            echo "</head>"
+            echo "<body>"
+            echo "  <h1>compose-exploded-layers Wasm Demos</h1>"
+            echo "  <ul>"
+
+            for entry in $(git ls-tree --name-only origin/gh-pages wasm-demo/ 2>/dev/null | sort -Vr); do
+              name=$(basename "$entry")
+              if [[ "$name" != "index.html" ]]; then
+                echo "    <li><a href=\"$name/\">$name</a></li>"
+              fi
+            done
+
+            echo "  </ul>"
+            echo "</body>"
+            echo "</html>"
+          } > wasm-demo/index.html
+
+      - name: Upload version index
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: wasm-demo
+          destination_dir: wasm-demo
+          keep_files: true
+          commit_message: "Update wasm-demo index page"
