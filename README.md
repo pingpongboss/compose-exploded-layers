@@ -57,8 +57,8 @@ the library.
 
 ### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web
 
-- **Open the live demo** on the
-  project's [Github Pages](https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/).
+- **Open the live demo** from
+  the [release notes](https://github.com/pingpongboss/compose-exploded-layers/releases).
 - **Build and install locally** using: `./gradlew :samples:wasm:wasmJsBrowserDevelopmentRun`
 - Check-out the code under [`samples/wasm`](samples/wasm).
 

@@ -3,6 +3,11 @@ name: Publish Wasm Demo
 on:
   release:
     types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag name to append demo link for (e.g. 1.1.2)"
+        required: true
 
 permissions:
   contents: write
@@ -32,56 +37,41 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: samples/wasm/build/dist/wasmJs/productionExecutable
-          destination_dir: wasm-demo/${{ github.ref_name }}
+          destination_dir: wasm-demo/${{ github.event.inputs.tag || github.ref_name }}
           keep_files: true
-          commit_message: "Deploy Wasm demo for release ${{ github.ref_name }}"
+          commit_message: "Deploy Wasm demo for release ${{ github.event.inputs.tag || github.ref_name }}"
 
-      - name: Generate version index page
+      - name: Append demo link to release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+          REPO: ${{ github.repository }}
         run: |
-          set -e
-          git fetch origin gh-pages || true
-          mkdir -p wasm-demo
+          DEMO_URL="https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/${TAG}/"
+          LINK_TEXT="wasm-demo-${TAG}"
+          SECTION=$'\n\n## 🌐 Live Demo\nTry this release directly in your browser (no install needed):\n\n'"[**Open ${LINK_TEXT} →**](${DEMO_URL})"
+          
+          # Get the existing release info
+          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
+          
+          if [ "$RELEASE_ID" = "null" ] || [ -z "$RELEASE_ID" ]; then
+            echo "❌ No release found for tag '${TAG}'."
+            exit 1
+          fi
+          
+          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
 
-          {
-            echo "<!doctype html>"
-            echo "<html lang=\"en\">"
-            echo "<head>"
-            echo "  <meta charset=\"utf-8\"/>"
-            echo "  <title>compose-exploded-layers Wasm Demos</title>"
-            echo "  <style>"
-            echo "    body { font-family: system-ui, sans-serif; margin: 2rem; }"
-            echo "    h1 { margin-bottom: 1rem; }"
-            echo "    ul { line-height: 1.8; list-style: none; padding-left: 0; }"
-            echo "    li::before { content: '• '; color: #555; }"
-            echo "    a { text-decoration: none; color: #0366d6; }"
-            echo "    a:hover { text-decoration: underline; }"
-            echo "  </style>"
-            echo "</head>"
-            echo "<body>"
-            echo "  <h1>compose-exploded-layers Wasm Demos</h1>"
-            echo "  <ul>"
-
-            git ls-tree --name-only origin/gh-pages wasm-demo/ 2>/dev/null \
-              | grep -v 'index.html' \
-              | grep -v '[-]alpha' \
-              | grep -v '[-]beta' \
-              | grep -v '[-]rc' \
-              | sort -Vr \
-              | while read -r entry; do
-                  name=$(basename "$entry")
-                  echo "    <li><a href=\"$name/\">$name</a></li>"
-                done
-
-            echo "  </ul>"
-            echo "</body>"
-            echo "</html>"
-          } > wasm-demo/index.html
-
-      - name: Upload version index
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: wasm-demo
-          destination_dir: wasm-demo
-          keep_files: true
-          commit_message: "Update wasm-demo index page"
+          # Append if not already included
+          if ! grep -q "$DEMO_URL" <<< "$BODY"; then
+            NEW_BODY="${BODY}${SECTION}"
+            jq -n --arg body "$NEW_BODY" '{body: $body}' |
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
+            echo "✅ Appended demo link to release notes."
+          else
+            echo "ℹ️ Demo link already present. Skipping."
+          fi
