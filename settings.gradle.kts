@@ -26,4 +26,4 @@ rootProject.name = "exploded.layers"
 
 include(":lib")
 
-include(":sample")
+include(":samples:android")

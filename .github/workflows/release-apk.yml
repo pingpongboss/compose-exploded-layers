@@ -1,14 +1,14 @@
-name: Build and Upload Sample APK
+name: Build and Upload Android Sample APK
 
 on:
   release:
-    types: [published]
+    types: [ published ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-        contents: write
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -23,16 +23,16 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v3
 
-      - name: Build sample debug APK
-        run: ./gradlew :sample:assembleDebug
+      - name: Build Android sample debug APK
+        run: ./gradlew :samples:android:assembleDebug
 
       - name: Rename APK
         run: |
-          mv sample/build/outputs/apk/debug/sample-debug.apk sample/build/outputs/apk/debug/sample-debug-${{ github.event.release.tag_name }}.apk
+          mv samples/android/build/outputs/apk/debug/android-debug.apk samples/android/build/outputs/apk/debug/android-sample-debug-${{ github.event.release.tag_name }}.apk
 
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: sample/build/outputs/apk/debug/sample-debug-${{ github.event.release.tag_name }}.apk
+          files: samples/android/build/outputs/apk/debug/android-sample-debug-${{ github.event.release.tag_name }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

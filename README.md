@@ -49,7 +49,8 @@ the library.
 
 - **Download the latest APK** from
   the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
-- **Build and install locally** using: `./gradlew :sample:installDebug` (you can also run the
+- **Build and install locally** using: `./gradlew :samples:android:installDebug` (you can also run
+  the
   sample configuration directly from Android Studio.)
 - Check-out the code under [`sample/`](sample).
 
