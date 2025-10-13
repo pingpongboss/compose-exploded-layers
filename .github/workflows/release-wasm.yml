@@ -61,12 +61,16 @@ jobs:
             echo "  <h1>compose-exploded-layers Wasm Demos</h1>"
             echo "  <ul>"
 
-            for entry in $(git ls-tree --name-only origin/gh-pages wasm-demo/ 2>/dev/null | sort -Vr); do
-              name=$(basename "$entry")
-              if [[ "$name" != "index.html" ]]; then
-                echo "    <li><a href=\"$name/\">$name</a></li>"
-              fi
-            done
+            git ls-tree --name-only origin/gh-pages wasm-demo/ 2>/dev/null \
+              | grep -v 'index.html' \
+              | grep -v '[-]alpha' \
+              | grep -v '[-]beta' \
+              | grep -v '[-]rc' \
+              | sort -Vr \
+              | while read -r entry; do
+                  name=$(basename "$entry")
+                  echo "    <li><a href=\"$name/\">$name</a></li>"
+                done
 
             echo "  </ul>"
             echo "</body>"
