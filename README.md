@@ -34,11 +34,12 @@ Use it to:
 ✅ Draggable 2D exploration (pan and drag to rotate layers)  
 ✅ Customizable spread distance, easing, and axis  
 ✅ Lightweight — built only with Compose primitives  
-✅ Works with any composable tree
+✅ Works with any composable tree  
+✅ Built with Kotlin Multiplatform (KMP), currently supporting Android and WebAssembly
 
 ---
 
-## 📲 Sample App
+## 📲 Sample Apps
 
 [![Latest Release](https://img.shields.io/github/v/release/pingpongboss/compose-exploded-layers?color=brightgreen&label=release)](https://github.com/pingpongboss/compose-exploded-layers/releases)
 
@@ -52,12 +53,14 @@ the library.
 - **Build and install locally** using: `./gradlew :samples:android:installDebug` (you can also run
   the
   sample configuration directly from Android Studio.)
-- Check-out the code under [`sample/`](sample).
+- Check-out the code under [`samples/android`](samples/android).
 
 ### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web
 
-- KMP support
-  is [currently being discussed](https://github.com/pingpongboss/compose-exploded-layers/pull/2).
+- **Open the live demo** on the
+  project's [Github Pages](https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/).
+- **Build and install locally** using: `./gradlew :samples:wasm:wasmJsBrowserDevelopmentRun`
+- Check-out the code under [`samples/wasm`](samples/wasm).
 
 ---
 
