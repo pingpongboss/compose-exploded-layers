@@ -14,7 +14,6 @@ pluginManagement {
 }
 
 dependencyResolutionManagement {
-    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         google()
@@ -22,8 +21,10 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "exploded.layers"
+rootProject.name = "compose.exploded.layers"
 
 include(":lib")
 
 include(":samples:android")
+
+include(":samples:wasm")
