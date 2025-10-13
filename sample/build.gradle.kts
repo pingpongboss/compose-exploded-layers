@@ -7,10 +7,10 @@ plugins {
 }
 
 android {
-    namespace = "com.github.pingpongboss.explodedlayers.sample"
+    namespace = "io.github.pingpongboss.explodedlayers.sample"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.github.pingpongboss.explodedlayers.sample"
+        applicationId = "io.github.pingpongboss.explodedlayers.sample"
         minSdk = 36
         targetSdk = 36
         versionCode = 1

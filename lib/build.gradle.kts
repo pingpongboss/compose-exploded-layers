@@ -112,7 +112,7 @@ mavenPublishing {
         }
         developers {
             developer {
-                id.set("com.github.pingpongboss")
+                id.set("io.github.pingpongboss")
                 name.set("Mark Wei")
                 email.set("markwei@gmail.com")
             }
