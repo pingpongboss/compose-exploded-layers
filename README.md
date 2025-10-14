@@ -46,7 +46,7 @@ Use it to:
 Try out the sample app to see exploded layers in action, and learn by example how to integrate with
 the library.
 
-### <img src="https://cdn.simpleicons.org/android/3DDC84" width="18" align="absmiddle" /> Android
+### <img src="https://cdn.simpleicons.org/android/3DDC84" width="18" align="absmiddle" /> Android (APK)
 
 - **Download the latest APK** from
   the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
@@ -55,12 +55,19 @@ the library.
   sample configuration directly from Android Studio.)
 - Check-out the code under [`samples/android`](samples/android).
 
-### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web
+### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web (Wasm)
 
-- **Open the live demo** from
+- **Open the web demo** from
   the [release notes](https://github.com/pingpongboss/compose-exploded-layers/releases).
 - **Build and install locally** using: `./gradlew :samples:wasm:wasmJsBrowserDevelopmentRun`
 - Check-out the code under [`samples/wasm`](samples/wasm).
+
+### <img src="https://cdn.simpleicons.org/gnometerminal/C8202F" width="18" align="absmiddle" /> Desktop (JVM)
+
+- **Download the latest JAR** from
+  the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
+- **Build and install locally** using: `./gradlew :samples:jvm:run`
+- Check-out the code under [`samples/jvm`](samples/jvm).
 
 ---
 
