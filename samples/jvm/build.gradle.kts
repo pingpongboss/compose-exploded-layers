@@ -42,7 +42,7 @@ tasks.withType<Copy>().configureEach { duplicatesStrategy = DuplicatesStrategy.E
 
 tasks.register<Jar>("jvmDesktopDistribution") {
     group = "distribution"
-    description = "Assembles a runnable single-JAR distribution for the JVM desktop sample."
+    description = "Assembles a runnable single-JAR desktop app."
 
     archiveBaseName.set("ExplodedLayersDesktop")
     archiveVersion.set("")
@@ -52,11 +52,18 @@ tasks.register<Jar>("jvmDesktopDistribution") {
         attributes["Main-Class"] = "io.github.pingpongboss.explodedlayers.samples.jvm.MainKt"
     }
 
+    dependsOn(":samples:common:compileKotlinJvm")
+
     from({
-        configurations.getByName("jvmRuntimeClasspath").map {
-            if (it.isDirectory) it else zipTree(it)
+        configurations.getByName("jvmRuntimeClasspath").mapNotNull {
+            when {
+                it.isDirectory -> it
+                it.name.endsWith(".jar") && it.exists() -> zipTree(it)
+                else -> null
+            }
         }
     })
+
     from(layout.buildDirectory.dir("classes/kotlin/jvm/main"))
 
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
