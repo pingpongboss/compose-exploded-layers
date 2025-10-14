@@ -34,6 +34,7 @@ kotlin {
     sourceSets {
         wasmJsMain.dependencies {
             implementation(project(":lib"))
+            implementation(project(":samples:common"))
 
             implementation(compose.ui)
             implementation(compose.foundation)
@@ -46,6 +47,6 @@ kotlin {
 }
 
 compose.resources {
-    packageOfResClass = "com.github.pingpongboss.explodedlayers.samples.wasm.resources"
+    packageOfResClass = "io.github.pingpongboss.explodedlayers.samples.wasm.resources"
     publicResClass = true
 }

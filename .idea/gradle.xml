@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/lib" />
             <option value="$PROJECT_DIR$/samples" />
             <option value="$PROJECT_DIR$/samples/android" />
+            <option value="$PROJECT_DIR$/samples/common" />
             <option value="$PROJECT_DIR$/samples/wasm" />
           </set>
         </option>

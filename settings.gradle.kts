@@ -28,3 +28,5 @@ include(":lib")
 include(":samples:android")
 
 include(":samples:wasm")
+
+include(":samples:common")
