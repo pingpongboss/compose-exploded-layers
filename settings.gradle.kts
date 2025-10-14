@@ -25,8 +25,10 @@ rootProject.name = "compose.exploded.layers"
 
 include(":lib")
 
+include(":samples:common")
+
 include(":samples:android")
 
 include(":samples:wasm")
 
-include(":samples:common")
+include(":samples:jvm")
