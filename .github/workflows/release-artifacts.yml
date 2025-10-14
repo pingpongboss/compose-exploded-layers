@@ -173,9 +173,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           SECTION=$'\n\n## 🖥️ Desktop Demos\nDownload and run locally (requires **Java 17+**):\n\n'
-          SECTION+=$'```bash\n# macOS\njava -jar desktop-sample-'+"${TAG}"+$'-macos.jar\n\n'
-          SECTION+=$'# Linux\njava -jar desktop-sample-'+"${TAG}"+$'-linux.jar\n\n'
-          SECTION+=$'# Windows\njava -jar desktop-sample-'+"${TAG}"+$'-windows.jar\n```\n'
+          SECTION+=$'```bash\n# macOS\njava -jar desktop-sample-'"${TAG}"$'-macos.jar\n\n'
+          SECTION+=$'# Linux\njava -jar desktop-sample-'"${TAG}"$'-linux.jar\n\n'
+          SECTION+=$'# Windows\njava -jar desktop-sample-'"${TAG}"$'-windows.jar\n```\n'
           
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
