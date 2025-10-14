@@ -32,16 +32,15 @@ kotlin {
     }
 
     sourceSets {
-        val wasmJsMain by getting {
-            dependencies {
-                implementation(compose.ui)
-                implementation(compose.foundation)
-                implementation(compose.materialIconsExtended)
-                implementation(libs.org.jetbrains.compose.material3.material3)
-                implementation(compose.components.uiToolingPreview)
-                implementation(compose.components.resources)
-                implementation(project(":lib"))
-            }
+        wasmJsMain.dependencies {
+            implementation(project(":lib"))
+
+            implementation(compose.ui)
+            implementation(compose.foundation)
+            implementation(compose.materialIconsExtended)
+            implementation(libs.org.jetbrains.compose.material3.material3)
+            implementation(compose.components.uiToolingPreview)
+            implementation(compose.components.resources)
         }
     }
 }
