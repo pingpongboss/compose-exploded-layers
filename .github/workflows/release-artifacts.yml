@@ -121,8 +121,17 @@ jobs:
   # 💻 DESKTOP (JVM)
   # -------------------------------------------------------------
   publish-jvm:
-    name: 🖥️ Build & Upload Desktop JAR
-    runs-on: ubuntu-latest
+    name: 🖥️ Build & Upload Desktop JARs (macOS / Windows / Linux)
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-latest
+            suffix: macos
+          - os: ubuntu-latest
+            suffix: linux
+          - os: windows-latest
+            suffix: windows
 
     steps:
       - name: Checkout repository
@@ -139,43 +148,69 @@ jobs:
       - name: Set up Gradle
         uses: gradle/gradle-build-action@v3
 
-      - name: Build desktop JAR
-        run: ./gradlew :samples:jvm:jvmDesktopDistribution
+      - name: Build desktop JAR for current OS
+        run: ./gradlew :samples:jvm:packageReleaseUberJarForCurrentOS
 
-      - name: Rename JAR
+      - name: Rename JAR with OS suffix
+        shell: bash
         run: |
           mkdir -p samples/jvm/build/outputs/jar
-          mv samples/jvm/build/dist/ExplodedLayersDesktop.jar \
-             samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}.jar
+          JAR_SRC=$(find samples/jvm/build/compose/jars -name "*.jar" | head -n 1)
+          JAR_DST="samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}-${{ matrix.suffix }}.jar"
+          cp "$JAR_SRC" "$JAR_DST"
+          echo "Built $JAR_DST"
 
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}.jar
+          files: samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}-${{ matrix.suffix }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Append Desktop Demo instructions to release notes
+      - name: Append Desktop Demo section to release notes (only once)
+        if: matrix.os == 'ubuntu-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
         run: |
-          LINK_TEXT="desktop-sample-${TAG}.jar"
-          SECTION=$'\n\n## 🖥️ Desktop Demo\nDownload and run locally (requires **Java 17+**):\n\n```bash\njava -jar '"${LINK_TEXT}"$'\n```\n'
+          # Build Markdown section line-by-line
+          SECTION=""
+          SECTION+=$'\n## 🖥️ Desktop Demos'
+          SECTION+=$'\nDownload and run locally (requires **Java 17+**):'
+          SECTION+=$'\n'
+          SECTION+=$'\n```bash'
+          SECTION+=$'\n# macOS'
+          SECTION+=$'\njava -jar desktop-sample-'"${TAG}"'-macos.jar'
+          SECTION+=$'\n'
+          SECTION+=$'\n# Linux'
+          SECTION+=$'\njava -jar desktop-sample-'"${TAG}"'-linux.jar'
+          SECTION+=$'\n'
+          SECTION+=$'\n# Windows'
+          SECTION+=$'\njava -jar desktop-sample-'"${TAG}"'-windows.jar'
+          SECTION+=$'\n```'
+          SECTION+=$'\n'
           
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
           [ "$RELEASE_ID" = "null" ] && exit 1
           
           BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
-          if ! grep -q "Desktop Demo" <<< "$BODY"; then
+          
+          if ! grep -q "Desktop Demos" <<< "$BODY"; then
             NEW_BODY="${BODY}${SECTION}"
-            jq -n --arg body "$NEW_BODY" '{body: $body}' |
-              curl -s -X PATCH \
-                -H "Authorization: Bearer $GITHUB_TOKEN" \
-                -H "Content-Type: application/json" \
-                -d @- \
-                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
-            echo "✅ Appended Desktop Demo instructions."
-          else
-            echo "ℹ️ Desktop section already present. Skipping."
-          fi
+          
+            # Send raw JSON manually — no jq escaping
+            curl -s -X PATCH \
+              -H "Authorization: Bearer $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              --data-binary @- \
+              "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}" <<JSON
+  {
+    "body": "$(echo "$NEW_BODY" | sed 's/"/\\"/g')"
+  }
+  JSON
+  
+  echo "✅ Appended Desktop Demo instructions with proper Markdown formatting."
+  else
+  echo "ℹ️ Desktop section already present. Skipping."
+  fi
