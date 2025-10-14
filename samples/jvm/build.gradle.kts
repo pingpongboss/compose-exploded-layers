@@ -1,3 +1,4 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -36,35 +37,11 @@ kotlin {
     }
 }
 
-tasks.named<Sync>("installJvmDist") { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-
-tasks.withType<Copy>().configureEach { duplicatesStrategy = DuplicatesStrategy.EXCLUDE }
-
-tasks.register<Jar>("jvmDesktopDistribution") {
-    group = "distribution"
-    description = "Assembles a runnable single-JAR desktop app."
-
-    archiveBaseName.set("ExplodedLayersDesktop")
-    archiveVersion.set("")
-    destinationDirectory.set(layout.buildDirectory.dir("dist"))
-
-    manifest {
-        attributes["Main-Class"] = "io.github.pingpongboss.explodedlayers.samples.jvm.MainKt"
-    }
-
-    dependsOn("compileKotlinJvm")
-
-    from(layout.buildDirectory.dir("classes/kotlin/jvm/main"))
-
-    from({
-        configurations.getByName("jvmRuntimeClasspath").mapNotNull {
-            when {
-                it.isDirectory -> it
-                it.name.endsWith(".jar") && it.exists() -> zipTree(it)
-                else -> null
-            }
+compose.desktop {
+    application {
+        mainClass = "io.github.pingpongboss.explodedlayers.samples.jvm.MainKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.AppImage, TargetFormat.Exe, TargetFormat.Deb)
         }
-    })
-
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
 }
