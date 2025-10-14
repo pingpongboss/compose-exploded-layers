@@ -1,0 +1,181 @@
+name: Build and Publish All Samples
+
+on:
+  release:
+    types: [ published ]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag name to build and publish all samples for (e.g. 1.1.2)"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  TAG: ${{ github.event.inputs.tag || github.event.release.tag_name }}
+  REPO: ${{ github.repository }}
+
+jobs:
+  # -------------------------------------------------------------
+  # 🤖 ANDROID APK
+  # -------------------------------------------------------------
+  publish-apk:
+    name: 🤖 Build & Upload Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build Android sample debug APK
+        run: ./gradlew :samples:android:assembleDebug
+
+      - name: Rename APK
+        run: |
+          mv samples/android/build/outputs/apk/debug/android-debug.apk \
+             samples/android/build/outputs/apk/debug/android-sample-debug-${{ env.TAG }}.apk
+
+      - name: Upload APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: samples/android/build/outputs/apk/debug/android-sample-debug-${{ env.TAG }}.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # -------------------------------------------------------------
+  # 🌐 WEB (WASM)
+  # -------------------------------------------------------------
+  publish-wasm:
+    name: 🌐 Build & Publish Web (Wasm) Demo
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Upgrade Yarn lock (for Wasm)
+        run: ./gradlew kotlinWasmUpgradeYarnLock
+
+      - name: Build Wasm production executable
+        run: ./gradlew :samples:wasm:wasmJsBrowserDistribution
+
+      - name: Deploy Wasm demo for this release
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: samples/wasm/build/dist/wasmJs/productionExecutable
+          destination_dir: wasm-demo/${{ env.TAG }}
+          keep_files: true
+          commit_message: "Deploy Wasm demo for release ${{ env.TAG }}"
+
+      - name: Append Web Demo link to release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DEMO_URL="https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/${TAG}/"
+          LINK_TEXT="wasm-demo-${TAG}"
+          SECTION=$'\n\n## 🌐 Web Demo\nTry this release directly in your browser (no install needed):\n\n'"[**Open ${LINK_TEXT} →**](${DEMO_URL})"
+          
+          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
+          [ "$RELEASE_ID" = "null" ] && exit 1
+          
+          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
+          if ! grep -q "$DEMO_URL" <<< "$BODY"; then
+            NEW_BODY="${BODY}${SECTION}"
+            jq -n --arg body "$NEW_BODY" '{body: $body}' |
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
+            echo "✅ Appended Web Demo link."
+          else
+            echo "ℹ️ Web Demo link already present. Skipping."
+          fi
+
+  # -------------------------------------------------------------
+  # 💻 DESKTOP (JVM)
+  # -------------------------------------------------------------
+  publish-jvm:
+    name: 🖥️ Build & Upload Desktop JAR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Set up Gradle
+        uses: gradle/gradle-build-action@v3
+
+      - name: Build desktop JAR
+        run: ./gradlew :samples:jvm:jvmDesktopDistribution
+
+      - name: Rename JAR
+        run: |
+          mkdir -p samples/jvm/build/outputs/jar
+          mv samples/jvm/build/dist/ExplodedLayersDesktop.jar \
+             samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}.jar
+
+      - name: Upload JAR to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Append Desktop Demo instructions to release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LINK_TEXT="desktop-sample-${TAG}.jar"
+          SECTION=$'\n\n## 🖥️ Desktop Demo\nDownload and run locally (requires **Java 17+**):\n\n```bash\njava -jar '"${LINK_TEXT}"$'\n```\n'
+          
+          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
+          [ "$RELEASE_ID" = "null" ] && exit 1
+          
+          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
+          if ! grep -q "Desktop Demo" <<< "$BODY"; then
+            NEW_BODY="${BODY}${SECTION}"
+            jq -n --arg body "$NEW_BODY" '{body: $body}' |
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
+            echo "✅ Appended Desktop Demo instructions."
+          else
+            echo "ℹ️ Desktop section already present. Skipping."
+          fi
