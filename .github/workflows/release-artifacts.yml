@@ -50,6 +50,7 @@ jobs:
       - name: Upload APK to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
           files: samples/android/build/outputs/apk/debug/android-sample-${{ env.TAG }}.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -91,34 +92,8 @@ jobs:
           keep_files: true
           commit_message: "Deploy Wasm demo for release ${{ env.TAG }}"
 
-      - name: Append Web Demo link to release notes
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          DEMO_URL="https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/${TAG}/"
-          LINK_TEXT="wasm-demo-${TAG}"
-          SECTION=$'\n\n## 🌐 Web Demo\nTry this release directly in your browser (no install needed):\n\n'"[**Open ${LINK_TEXT} →**](${DEMO_URL})"
-          
-          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
-          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
-          [ "$RELEASE_ID" = "null" ] && exit 1
-          
-          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
-          if ! grep -q "$DEMO_URL" <<< "$BODY"; then
-            NEW_BODY="${BODY}${SECTION}"
-            jq -n --arg body "$NEW_BODY" '{body: $body}' |
-              curl -s -X PATCH \
-                -H "Authorization: Bearer $GITHUB_TOKEN" \
-                -H "Content-Type: application/json" \
-                -d @- \
-                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
-            echo "✅ Appended Web Demo link."
-          else
-            echo "ℹ️ Web Demo link already present. Skipping."
-          fi
-
   # -------------------------------------------------------------
-  # 💻 DESKTOP (JVM)
+  # 💻 DESKTOP JAR
   # -------------------------------------------------------------
   publish-jvm:
     name: 🖥️ Build & Upload Desktop JARs (macOS / Windows / Linux)
@@ -163,19 +138,118 @@ jobs:
       - name: Upload JAR to GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TAG }}
           files: samples/jvm/build/outputs/jar/desktop-sample-${{ env.TAG }}-${{ matrix.suffix }}.jar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Append Desktop Demo section to release notes (only once)
-        if: matrix.os == 'ubuntu-latest'
+  # -------------------------------------------------------------
+  # 📝 DOCUMENTATION
+  # -------------------------------------------------------------
+  document-apk:
+    name: 🤖 Write release notes for Android Demo
+    runs-on: ubuntu-latest
+    needs: [ publish-apk ]
+
+    steps:
+      - name: Append Android Demo section to release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          SECTION=$'\n\n## 🖥️ Desktop Demos\nDownload and run locally (requires **Java 17+**):\n\n'
-          SECTION+=$'```bash\n# macOS\njava -jar desktop-sample-'"${TAG}"$'-macos.jar\n\n'
-          SECTION+=$'# Linux\njava -jar desktop-sample-'"${TAG}"$'-linux.jar\n\n'
-          SECTION+=$'# Windows\njava -jar desktop-sample-'"${TAG}"$'-windows.jar\n```\n'
+          DOWNLOAD_PREFIX="https://github.com/pingpongboss/compose-exploded-layers/releases/download/${TAG}"
+          APK_FILE="android-sample-${TAG}.apk"
+
+          SECTION=$'\n\n## 🤖️ Android Demo\n'
+          SECTION+=$'Download and install directly on your phone, or using **adb** on your computer:\n'
+          SECTION+=$'\n'
+          SECTION+=$'```bash\n'
+          SECTION+="curl -L -O $DOWNLOAD_PREFIX/$APK_FILE"$'\n'
+          SECTION+="adb install $APK_FILE"$'\n'
+          SECTION+=$'```\n'
+
+          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
+          [ "$RELEASE_ID" = "null" ] && exit 1
+
+          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
+          if ! grep -q "Desktop Demos" <<< "$BODY"; then
+            NEW_BODY="${BODY}${SECTION}"
+            jq -n --arg body "$NEW_BODY" '{body: $body}' |
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
+            echo "✅ Appended Android Demo instructions."
+          else
+            echo "ℹ️ Android section already present. Skipping."
+          fi
+
+  document-wasm:
+    name: 🌐 Write release notes for Web Demo
+    runs-on: ubuntu-latest
+    needs: [ publish-wasm, document-apk ]
+    if: needs.publish-wasm.result == 'success' && always()
+
+    steps:
+      - name: Append Web Demo section to release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DEMO_URL="https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/${TAG}/"
+          LINK_TEXT="wasm-demo-${TAG}"
+          SECTION=$'\n\n## 🌐 Web Demo\nTry this release directly in your browser (no install needed):\n\n'"[**Open ${LINK_TEXT} →**](${DEMO_URL})"
+          
+          API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
+          RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
+          [ "$RELEASE_ID" = "null" ] && exit 1
+          
+          BODY=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .body)
+          if ! grep -q "$DEMO_URL" <<< "$BODY"; then
+            NEW_BODY="${BODY}${SECTION}"
+            jq -n --arg body "$NEW_BODY" '{body: $body}' |
+              curl -s -X PATCH \
+                -H "Authorization: Bearer $GITHUB_TOKEN" \
+                -H "Content-Type: application/json" \
+                -d @- \
+                "https://api.github.com/repos/${REPO}/releases/${RELEASE_ID}"
+            echo "✅ Appended Web Demo link."
+          else
+            echo "ℹ️ Web Demo link already present. Skipping."
+          fi
+
+  document-jvm:
+    name: 🖥️ Write release notes for Desktop Demo
+    runs-on: ubuntu-latest
+    needs: [ publish-jvm, document-wasm ]
+    if: needs.publish-jvm.result == 'success' && always()
+
+    steps:
+      - name: Append Desktop Demo section to release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          DOWNLOAD_PREFIX="https://github.com/pingpongboss/compose-exploded-layers/releases/download/${TAG}"
+          MACOS_FILE="desktop-sample-${TAG}-macos.jar"
+          LINUX_FILE="desktop-sample-${TAG}-linux.jar"
+          WINDOWS_FILE="desktop-sample-${TAG}-windows.jar"
+          
+          SECTION=$'\n\n## 🖥️ Desktop Demo\n'
+          SECTION+=$'Download and run locally (requires **Java 17+**):\n'
+          SECTION+=$'\n'
+          SECTION+=$'```bash\n'
+          SECTION+=$'# macOS\n'
+          SECTION+="curl -L -O $DOWNLOAD_PREFIX/$MACOS_FILE"$'\n'
+          SECTION+="java -jar $MACOS_FILE"$'\n'
+          SECTION+=$'\n'
+          SECTION+=$'# Linux\n'
+          SECTION+="curl -L -O $DOWNLOAD_PREFIX/$LINUX_FILE"$'\n'
+          SECTION+="java -jar $LINUX_FILE"$'\n'
+          SECTION+=$'\n'
+          SECTION+=$'# Windows\n'
+          SECTION+="curl -L -O $DOWNLOAD_PREFIX/$WINDOWS_FILE"$'\n'
+          SECTION+="java -jar $WINDOWS_FILE"$'\n'
+          SECTION+=$'```\n'
           
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)

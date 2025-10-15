@@ -35,18 +35,19 @@ Use it to:
 ✅ Customizable spread distance, easing, and axis  
 ✅ Lightweight — built only with Compose primitives  
 ✅ Works with any composable tree  
-✅ Built with Kotlin Multiplatform (KMP), currently supporting Android and WebAssembly
+✅ Built with Kotlin Multiplatform (KMP), currently supporting Android, WebAssembly, and Desktop
+(JVM)
 
 ---
 
-## 📲 Sample Apps
+## 📲 Demos
 
 [![Latest Release](https://img.shields.io/github/v/release/pingpongboss/compose-exploded-layers?color=brightgreen&label=release)](https://github.com/pingpongboss/compose-exploded-layers/releases)
 
-Try out the sample app to see exploded layers in action, and learn by example how to integrate with
-the library.
+Try out the sample apps to see exploded layers in action, and learn by example for how to integrate
+with the library.
 
-### <img src="https://cdn.simpleicons.org/android/3DDC84" width="18" align="absmiddle" /> Android (APK)
+### 🤖 Android
 
 - **Download the latest APK** from
   the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
@@ -55,14 +56,14 @@ the library.
   sample configuration directly from Android Studio.)
 - Check-out the code under [`samples/android`](samples/android).
 
-### <img src="https://cdn.simpleicons.org/googlechrome/4285F4" width="18" align="absmiddle" /> Web (Wasm)
+### 🌐 Web
 
-- **Open the web demo** from
+- **Open the latest WebAssembly demo** from
   the [release notes](https://github.com/pingpongboss/compose-exploded-layers/releases).
 - **Build and install locally** using: `./gradlew :samples:wasm:wasmJsBrowserDevelopmentRun`
 - Check-out the code under [`samples/wasm`](samples/wasm).
 
-### <img src="https://cdn.simpleicons.org/gnometerminal/C8202F" width="18" align="absmiddle" /> Desktop (JVM)
+### 🖥️ Desktop
 
 - **Download the latest JAR** from
   the [release assets](https://github.com/pingpongboss/compose-exploded-layers/releases).
