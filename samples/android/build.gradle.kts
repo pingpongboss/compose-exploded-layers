@@ -6,6 +6,23 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+version =
+    runCatching {
+            // Try to get the latest annotated or lightweight tag name
+            "git describe --tags --abbrev=0".runCommand().trim()
+        }
+        .getOrElse {
+            "0.0.0-SNAPSHOT" // fallback if no tags yet
+        }
+
+private fun String.runCommand(): String =
+    ProcessBuilder(*split(" ").toTypedArray())
+        .redirectErrorStream(true)
+        .start()
+        .inputStream
+        .bufferedReader()
+        .readText()
+
 android {
     namespace = "io.github.pingpongboss.explodedlayers.samples.android"
     compileSdk = 36
@@ -14,7 +31,7 @@ android {
         minSdk = 36
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = rootProject.version.toString()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

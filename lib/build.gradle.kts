@@ -78,26 +78,13 @@ android {
     buildFeatures { compose = true }
 }
 
-version =
-    runCatching {
-            // Try to get the latest annotated or lightweight tag name
-            "git describe --tags --abbrev=0".runCommand().trim()
-        }
-        .getOrElse {
-            "0.0.0-SNAPSHOT" // fallback if no tags yet
-        }
-
-private fun String.runCommand(): String =
-    ProcessBuilder(*split(" ").toTypedArray())
-        .redirectErrorStream(true)
-        .start()
-        .inputStream
-        .bufferedReader()
-        .readText()
-
 mavenPublishing {
     // Define coordinates for the published artifact
-    coordinates(groupId = "io.github.pingpongboss", artifactId = "compose-exploded-layers")
+    coordinates(
+        groupId = "io.github.pingpongboss",
+        artifactId = "compose-exploded-layers",
+        version = rootProject.version.toString(),
+    )
 
     // Configure POM metadata for the published artifact
     pom {
