@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -25,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
@@ -138,6 +140,7 @@ fun ExplodedLayersRoot(
                             bottom = if (offsetY > 0.dp) abs(offsetY) else 0.dp,
                         )
                 ) {
+                    if (state.spread > 0f) BlockTouches() // Blocks touches on the underlay.
                     content()
                 }
             }
@@ -258,7 +261,17 @@ fun SeparateLayer(content: @Composable () -> Unit) {
                 .thenIf(state.spread > 0f) { graphicsLayer { alpha = 0f } }
     ) {
         content()
+        if (state.spread > 0f) BlockTouches() // Blocks touches on the invisible original.
     }
+}
+
+@Composable
+private fun BoxScope.BlockTouches() {
+    Box(
+        Modifier.matchParentSize().pointerInput(Unit) {
+            awaitPointerEventScope { while (true) awaitPointerEvent() }
+        }
+    )
 }
 
 private fun Modifier.skew(state: ExplodedLayersState): Modifier {
