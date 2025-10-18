@@ -6,17 +6,13 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.calculateEndPadding
-import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
@@ -25,6 +21,7 @@ import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Slider
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,7 +34,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -62,91 +58,81 @@ private val EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET = DpOffset(x = -40.dp, y = 40
 private val EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET = DpOffset(x = -20.dp, y = 20.dp)
 
 @Composable
-fun ButtonsScreen(innerPadding: PaddingValues) {
-    Column(
-        modifier =
-            Modifier.padding(
-                    start = innerPadding.calculateStartPadding(LocalLayoutDirection.current),
-                    top = innerPadding.calculateTopPadding(),
-                    end = innerPadding.calculateEndPadding(LocalLayoutDirection.current),
-                )
-                .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = "https://github.com/pingpongboss/compose-exploded-layers",
-            autoSize = TextAutoSize.StepBased(),
-            maxLines = 1,
-        )
-
-        val explodedLayersState1 =
-            rememberExplodedLayersState(
-                offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET,
-                interactive = true,
-                initialSpread = 0f,
-            )
-
-        val explodedLayersState2 =
-            rememberExplodedLayersState(
-                offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET,
-                interactive = false,
-                initialSpread = 0f,
-            )
-
-        var isAnimating by remember { mutableStateOf(false) }
-        val progressAnim = remember { Animatable(0f) }
-        InfiniteAnimationEffect(isAnimating, progressAnim) { explodedLayersState1.spread = it }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            val scope = rememberCoroutineScope()
-
-            Button(
-                onClick = {
-                    isAnimating = !isAnimating
-                    scope.launch {
-                        progressAnim.snapTo(0f)
-                        explodedLayersState1.spread = 0f
-                    }
-                }
-            ) {
-                Icon(
-                    imageVector = if (!isAnimating) Icons.Default.PlayArrow else Icons.Default.Stop,
-                    contentDescription = null,
-                )
-                Spacer(Modifier.width(6.dp))
-                Text(text = if (!isAnimating) "Start animation" else "Stop animation")
-            }
-
-            Button(
-                onClick = {
-                    isAnimating = false
-                    scope.launch {
-                        progressAnim.snapTo(0f)
-
-                        explodedLayersState1.offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET
-                        explodedLayersState1.spread = 0f
-
-                        explodedLayersState2.offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET
-                        explodedLayersState2.spread = 0f
-                    }
-                }
-            ) {
-                Icon(imageVector = Icons.Default.Restore, contentDescription = null)
-                Spacer(Modifier.width(6.dp))
-                Text(text = "Reset all")
-            }
-        }
-
-        Box(
-            modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f).fillMaxWidth(),
-            contentAlignment = Alignment.Center,
+fun ButtonsScreen() {
+    Surface {
+        Column(
+            modifier = Modifier.padding(top = 16.dp).padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            SampleGrid(
-                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
-                explodedLayersState1 = explodedLayersState1,
-                explodedLayersState2 = explodedLayersState2,
-            )
+            val explodedLayersState1 =
+                rememberExplodedLayersState(
+                    offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET,
+                    interactive = true,
+                    initialSpread = 0f,
+                )
+
+            val explodedLayersState2 =
+                rememberExplodedLayersState(
+                    offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET,
+                    interactive = false,
+                    initialSpread = 0f,
+                )
+
+            var isAnimating by remember { mutableStateOf(false) }
+            val progressAnim = remember { Animatable(0f) }
+            InfiniteAnimationEffect(isAnimating, progressAnim) { explodedLayersState1.spread = it }
+
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                val scope = rememberCoroutineScope()
+
+                Button(
+                    onClick = {
+                        isAnimating = !isAnimating
+                        scope.launch {
+                            progressAnim.snapTo(0f)
+                            explodedLayersState1.spread = 0f
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector =
+                            if (!isAnimating) Icons.Default.PlayArrow else Icons.Default.Stop,
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    Text(text = if (!isAnimating) "Start animation" else "Stop animation")
+                }
+
+                Button(
+                    onClick = {
+                        isAnimating = false
+                        scope.launch {
+                            progressAnim.snapTo(0f)
+
+                            explodedLayersState1.offset = EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET
+                            explodedLayersState1.spread = 0f
+
+                            explodedLayersState2.offset = EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET
+                            explodedLayersState2.spread = 0f
+                        }
+                    }
+                ) {
+                    Icon(imageVector = Icons.Default.Restore, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(text = "Reset all")
+                }
+            }
+
+            Box(
+                modifier = Modifier.verticalScroll(rememberScrollState()).weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                SampleGrid(
+                    explodedLayersState1 = explodedLayersState1,
+                    explodedLayersState2 = explodedLayersState2,
+                )
+            }
         }
     }
 }
@@ -296,5 +282,5 @@ private fun SampleGrid(
 @Preview(showBackground = true)
 @Composable
 fun SampleRootPreview() {
-    ExplodedLayersSampleTheme { ButtonsScreen(PaddingValues.Zero) }
+    ExplodedLayersSampleTheme { ButtonsScreen() }
 }

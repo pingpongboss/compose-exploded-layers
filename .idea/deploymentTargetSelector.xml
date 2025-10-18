@@ -7,6 +7,14 @@
       </SelectionState>
       <SelectionState runConfigName="samples.android">
         <option name="selectionMode" value="DROPDOWN" />
+        <DropdownSelection timestamp="2025-10-18T21:25:52.272755Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=4B201FDCQ0001N" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
       </SelectionState>
       <SelectionState runConfigName="samples.wasm">
         <option name="selectionMode" value="DROPDOWN" />
