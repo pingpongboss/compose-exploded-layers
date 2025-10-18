@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.zIndex
 
 /**
  * A layout composable that overlays two pieces of content where the second ("overlay") is measured
@@ -50,7 +51,7 @@ internal fun OverlayBox(modifier: Modifier = Modifier, content: OverlayBoxScope.
         modifier = modifier,
         content = {
             Box { baseContent() }
-            Box { overlayContent() }
+            Box(modifier = Modifier.zIndex(scope.overlayZIndex)) { overlayContent() }
         },
     ) { measurables, constraints ->
         val base = measurables[0].measure(constraints)
@@ -86,20 +87,33 @@ interface OverlayBoxScope {
      * the base composable.
      *
      * This must be called exactly once within the [OverlayBox] content block.
+     *
+     * @param zIndex The z-index to apply to the overlay, controlling its drawing order relative to
+     *   the base content. Defaults to `0f`, which places it on top of the base content.
      */
-    fun overlay(content: @Composable () -> Unit)
+    fun overlay(zIndex: Float = 0f, content: @Composable () -> Unit)
 }
 
 private class OverlayBoxScopeImpl : OverlayBoxScope {
 
     var base: (@Composable () -> Unit)? = null
+    var overlayZIndex: Float? = null
     var overlay: (@Composable () -> Unit)? = null
 
     override fun base(content: @Composable () -> Unit) {
         base = content
     }
 
-    override fun overlay(content: @Composable () -> Unit) {
+    override fun overlay(zIndex: Float, content: @Composable () -> Unit) {
+        overlayZIndex = zIndex
         overlay = content
+    }
+}
+
+private fun Modifier.zIndex(zIndex: Float?): Modifier {
+    return if (zIndex == null) {
+        this
+    } else {
+        zIndex(zIndex)
     }
 }

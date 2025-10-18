@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalExplodedLayersApi::class)
+
 package io.github.pingpongboss.explodedlayers
 
 import androidx.annotation.FloatRange
@@ -35,6 +37,8 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.unit.toSize
+import androidx.compose.ui.zIndex
+import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Above
 import kotlin.math.PI
 import kotlin.math.tan
 
@@ -106,6 +110,7 @@ fun ExplodedLayersRoot(
         LocalInstanceState provides instanceState,
         LocalInOverlay provides false,
     ) {
+        val sign = state.direction.sign
         var overlayPosition by remember { mutableStateOf(Offset.Zero) }
         var isDragging by remember { mutableStateOf(false) }
 
@@ -129,8 +134,8 @@ fun ExplodedLayersRoot(
                     }
         ) {
             base {
-                val offsetX = instanceState.numLayers * state.offset.x * state.spread
-                val offsetY = instanceState.numLayers * state.offset.y * state.spread
+                val offsetX = instanceState.numLayers * state.offset.x * state.spread * sign
+                val offsetY = instanceState.numLayers * state.offset.y * state.spread * sign
                 Box(
                     modifier =
                         Modifier.safePadding(
@@ -145,7 +150,7 @@ fun ExplodedLayersRoot(
                 }
             }
 
-            overlay {
+            overlay(zIndex = sign.toFloat()) {
                 // [SeparateLayer] compositions are rendered in this top-level overlay to prevent
                 // them from being clipped by their parents.
                 if (state.spread > 0f && instanceState.overlayLayers.isNotEmpty()) {
@@ -157,8 +162,8 @@ fun ExplodedLayersRoot(
                                 val layerBounds = layer.windowPosition ?: return@forEachIndexed
                                 val layerSize = layer.windowSize?.toSize() ?: return@forEachIndexed
 
-                                val offsetX = state.offset.x * state.spread
-                                val offsetY = state.offset.y * state.spread
+                                val offsetX = state.offset.x * state.spread * sign
+                                val offsetY = state.offset.y * state.spread * sign
                                 Box(
                                     Modifier.graphicsLayer {
                                             val x = layerBounds.x - overlayPosition.x
@@ -168,6 +173,7 @@ fun ExplodedLayersRoot(
                                             translationY = y + (offsetY * pos).toPx()
                                         }
                                         .size(layerSize.toDpSize())
+                                        .zIndex(pos.toFloat() * sign)
                                 ) {
                                     layer.content()
                                 }
@@ -204,7 +210,8 @@ fun Modifier.separateLayer(): Modifier {
     DisposableEffect(Unit) { onDispose { instanceState.numLayers-- } }
 
     return if (state.spread > 0f) {
-        offset(state.offset.x * state.spread, state.offset.y * state.spread)
+        val sign = state.direction.sign
+        offset(state.offset.x * state.spread * sign, state.offset.y * state.spread * sign)
     } else {
         this
     }
@@ -344,6 +351,7 @@ fun rememberExplodedLayersState(
     interactive: Boolean = true,
     showBackground: Boolean = true,
     offset: DpOffset = ExplodedLayersDefaults.offset(),
+    initialDirection: ExplodedLayersDirection = Above,
     @FloatRange(from = 0.0, to = 1.0) initialSpread: Float = 1f,
 ): ExplodedLayersState {
     return remember {
@@ -351,9 +359,43 @@ fun rememberExplodedLayersState(
             interactive = interactive,
             showBackground = showBackground,
             initialOffset = offset,
+            initialDirection = initialDirection,
             spread = initialSpread,
         )
     }
+}
+
+@RequiresOptIn(
+    message = "This API is experimental and may change or be removed in the future.",
+    level = RequiresOptIn.Level.ERROR,
+)
+@Retention(AnnotationRetention.BINARY)
+@Target(AnnotationTarget.CLASS, AnnotationTarget.FUNCTION)
+annotation class ExperimentalExplodedLayersApi
+
+/**
+ * Defines the direction in which layers are exploded relative to the base content.
+ *
+ * This determines the z-ordering and visual stacking of separated layers.
+ *
+ * @see ExplodedLayersState.direction
+ */
+sealed class ExplodedLayersDirection(internal val sign: Int) {
+
+    /**
+     * Layers are exploded above the base content.
+     *
+     * This is the default direction.
+     */
+    data object Above : ExplodedLayersDirection(sign = 1)
+
+    /**
+     * Layers are exploded below the base content. If `showBackground = true` is passed into
+     * [rememberExplodedLayersState], a visual hole will be cut out of the base layer.
+     *
+     * This currently only supports [SeparateLayer] but not [Modifier.separateLayer].
+     */
+    @ExperimentalExplodedLayersApi data object Behind : ExplodedLayersDirection(sign = -1)
 }
 
 /**
@@ -392,6 +434,7 @@ internal constructor(
     val interactive: Boolean,
     val showBackground: Boolean,
     val initialOffset: DpOffset,
+    initialDirection: ExplodedLayersDirection,
     spread: Float,
 ) {
 
@@ -418,6 +461,8 @@ internal constructor(
     @get:FloatRange(from = 0.0, to = 1.0)
     @setparam:FloatRange(from = 0.0, to = 1.0)
     var spread: Float by mutableFloatStateOf(spread)
+
+    var direction: ExplodedLayersDirection by mutableStateOf(initialDirection)
 }
 
 internal class ExplodedLayersInstanceState internal constructor() {
