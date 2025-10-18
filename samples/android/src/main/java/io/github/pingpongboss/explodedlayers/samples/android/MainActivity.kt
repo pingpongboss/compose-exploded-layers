@@ -33,72 +33,72 @@ import io.github.pingpongboss.explodedlayers.samples.android.theme.ExplodedLayer
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-         enableEdgeToEdge()
- 
-         setContent { ExplodedLayersSampleTheme { MainScreen() } }
-     }
- }
- 
- sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
- 
-     data object Buttons : BottomNavItem("buttons", Icons.Default.SmartButton, "Buttons")
- 
-     data object Dialer : BottomNavItem("dialer", Icons.Default.Phone, "Dialer")
- }
- 
- @Composable
- private fun MainScreen() {
-     val navController = rememberNavController()
+        enableEdgeToEdge()
+
+        setContent { ExplodedLayersSampleTheme { MainScreen() } }
+    }
+}
+
+sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
+
+    data object Buttons : BottomNavItem("buttons", Icons.Default.SmartButton, "Buttons")
+
+    data object Dialer : BottomNavItem("dialer", Icons.Default.Phone, "Dialer")
+}
+
+@Composable
+private fun MainScreen() {
+    val navController = rememberNavController()
     val navItems = listOf(BottomNavItem.Buttons, BottomNavItem.Dialer)
 
-     Scaffold(
-         bottomBar = {
-             NavigationBar {
-                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                 val currentDestination = navBackStackEntry?.destination
- 
-                 navItems.forEach { screen ->
-                     NavigationBarItem(
-                         selected =
-                             currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                         onClick = {
-                             navController.navigate(screen.route) {
-                                 popUpTo(navController.graph.findStartDestination().id) {
-                                     saveState = true
-                                 }
-                                 launchSingleTop = true
-                                 restoreState = true
-                             }
-                         },
-                         icon = { Icon(screen.icon, contentDescription = screen.label) },
-                         label = { Text(screen.label) },
-                     )
-                 }
-             }
-         }
-     ) { innerPadding ->
-         Column(
-             modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
-             verticalArrangement = Arrangement.spacedBy(16.dp),
-             horizontalAlignment = Alignment.CenterHorizontally,
-         ) {
-             Text(
-                 modifier = Modifier.padding(horizontal = 16.dp),
-                 text = "https://github.com/pingpongboss/compose-exploded-layers",
-                 autoSize = TextAutoSize.StepBased(),
-                 maxLines = 1,
-             )
- 
-             NavHost(
-                 navController = navController,
-                 startDestination = BottomNavItem.Buttons.route,
-                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
-             ) {
-                 composable(BottomNavItem.Buttons.route) {
-                     ExplodedLayersSampleTheme(darkTheme = false) { ButtonsScreen() }
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
+                val currentDestination = navBackStackEntry?.destination
+
+                navItems.forEach { screen ->
+                    NavigationBarItem(
+                        selected =
+                            currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                        onClick = {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(screen.icon, contentDescription = screen.label) },
+                        label = { Text(screen.label) },
+                    )
+                }
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding()),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                text = "https://github.com/pingpongboss/compose-exploded-layers",
+                autoSize = TextAutoSize.StepBased(),
+                maxLines = 1,
+            )
+
+            NavHost(
+                navController = navController,
+                startDestination = BottomNavItem.Buttons.route,
+                modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
+            ) {
+                composable(BottomNavItem.Buttons.route) {
+                    ExplodedLayersSampleTheme(darkTheme = false) { ButtonsScreen() }
                 }
                 composable(BottomNavItem.Dialer.route) {
-                    ExplodedLayersSampleTheme(darkTheme = true) { DialerScreen() }
+                    ExplodedLayersSampleTheme(darkTheme = true) { AppScreen { DialerApp() } }
                 }
             }
         }
