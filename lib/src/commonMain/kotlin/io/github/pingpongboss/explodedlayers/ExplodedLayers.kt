@@ -121,7 +121,7 @@ fun ExplodedLayersRoot(
                 modifier
                     .skew(state)
                     .onGloballyPositioned { overlayPosition = it.positionInWindow() }
-                    .thenIf(state.interactive) {
+                    .thenIf(state.showBackground) {
                         glass(alpha = state.spread, isDragging = isDragging)
                     }
                     .thenIf(state.interactive && state.spread > 0f) {
@@ -342,12 +342,14 @@ private fun Modifier.skew(state: ExplodedLayersState): Modifier {
 @Composable
 fun rememberExplodedLayersState(
     interactive: Boolean = true,
+    showBackground: Boolean = true,
     offset: DpOffset = ExplodedLayersDefaults.offset(),
     @FloatRange(from = 0.0, to = 1.0) initialSpread: Float = 1f,
 ): ExplodedLayersState {
     return remember {
         ExplodedLayersState(
             interactive = interactive,
+            showBackground = showBackground,
             initialOffset = offset,
             spread = initialSpread,
         )
@@ -386,7 +388,12 @@ fun rememberExplodedLayersState(
  * @property initialOffset The initial offset.
  */
 class ExplodedLayersState
-internal constructor(val interactive: Boolean, val initialOffset: DpOffset, spread: Float) {
+internal constructor(
+    val interactive: Boolean,
+    val showBackground: Boolean,
+    val initialOffset: DpOffset,
+    spread: Float,
+) {
 
     /**
      * The directional offset applied between consecutive layers when [spread] = 1f.
