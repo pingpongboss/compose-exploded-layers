@@ -220,6 +220,9 @@ fun Modifier.separateLayer(): Modifier {
  * This can occur if the content draws beyond its bounds or relies on clipping or transformation
  * behavior inherited from its parents.
  *
+ * Since [content] is rendered in a different composition context when exploded, any remembered
+ * state that you wish to remain consistent should be hoisted out of the [SeparateLayer].
+ *
  * @param content The composable content to render in a separate layer.
  */
 @Composable
