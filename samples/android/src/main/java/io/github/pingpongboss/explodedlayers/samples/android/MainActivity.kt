@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Message
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.SmartButton
 import androidx.compose.material3.Icon
@@ -44,12 +45,14 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: 
     data object Buttons : BottomNavItem("buttons", Icons.Default.SmartButton, "Buttons")
 
     data object Dialer : BottomNavItem("dialer", Icons.Default.Phone, "Dialer")
+
+    data object Messages : BottomNavItem("messages", Icons.AutoMirrored.Filled.Message, "Messages")
 }
 
 @Composable
 private fun MainScreen() {
     val navController = rememberNavController()
-    val navItems = listOf(BottomNavItem.Buttons, BottomNavItem.Dialer)
+    val navItems = listOf(BottomNavItem.Buttons, BottomNavItem.Dialer, BottomNavItem.Messages)
 
     Scaffold(
         bottomBar = {
@@ -99,6 +102,9 @@ private fun MainScreen() {
                 }
                 composable(BottomNavItem.Dialer.route) {
                     ExplodedLayersSampleTheme(darkTheme = true) { AppScreen { DialerApp() } }
+                }
+                composable(BottomNavItem.Messages.route) {
+                    ExplodedLayersSampleTheme(darkTheme = true) { AppScreen { MessagesApp() } }
                 }
             }
         }

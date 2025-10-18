@@ -14,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -72,13 +73,15 @@ fun AppScreen(content: @Composable () -> Unit) {
             )
 
             ExplodedLayersRoot(state = state) {
+                val shape = RoundedCornerShape(18.dp)
                 Box(
                     modifier =
                         Modifier.fillMaxSize()
+                            .clip(shape)
                             .border(
                                 width = 1.dp,
                                 color = MaterialTheme.colorScheme.outline,
-                                shape = RoundedCornerShape(18.dp),
+                                shape = shape,
                             )
                 ) {
                     content()

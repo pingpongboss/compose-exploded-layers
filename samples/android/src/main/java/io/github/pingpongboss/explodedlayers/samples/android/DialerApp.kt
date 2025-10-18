@@ -49,7 +49,7 @@ fun DialerApp() {
 }
 
 @Composable
-fun Body(modifier: Modifier) {
+private fun Body(modifier: Modifier) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +66,7 @@ fun Body(modifier: Modifier) {
 }
 
 @Composable
-fun MagicCue() {
+private fun MagicCue() {
     val scrollState = rememberScrollState()
 
     SeparateLayer {
@@ -124,7 +124,7 @@ private fun Section() {
 }
 
 @Composable
-fun ReservationGrid() {
+private fun ReservationGrid() {
     Row(
         modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Max),
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -139,7 +139,7 @@ fun ReservationGrid() {
 }
 
 @Composable
-fun InfoCell(header: String, body: String, modifier: Modifier) {
+private fun InfoCell(header: String, body: String, modifier: Modifier) {
     Column(
         modifier =
             modifier
@@ -153,7 +153,7 @@ fun InfoCell(header: String, body: String, modifier: Modifier) {
 }
 
 @Composable
-fun Footer(modifier: Modifier) {
+private fun Footer(modifier: Modifier) {
     Column(
         modifier =
             modifier
@@ -169,7 +169,7 @@ fun Footer(modifier: Modifier) {
 }
 
 @Composable
-fun ButtonRow() {
+private fun ButtonRow() {
     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         ButtonWithLabel(
             icon = Icons.Default.Keyboard,
@@ -191,7 +191,7 @@ fun ButtonRow() {
 }
 
 @Composable
-fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier) {
+private fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier) {
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -205,7 +205,7 @@ fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier) {
 }
 
 @Composable
-fun EndCallButton() {
+private fun EndCallButton() {
     FilledTonalIconButton(
         onClick = {},
         modifier = Modifier.width(160.dp).height(64.dp),
