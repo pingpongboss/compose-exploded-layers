@@ -6,6 +6,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -28,8 +29,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import androidx.compose.ui.unit.toSize
 import kotlin.math.PI
 import kotlin.math.tan
 
@@ -149,17 +152,19 @@ fun ExplodedLayersRoot(
                                 val pos = i + 1
 
                                 val layerBounds = layer.windowPosition ?: return@forEachIndexed
+                                val layerSize = layer.windowSize?.toSize() ?: return@forEachIndexed
 
                                 val offsetX = state.offset.x * state.spread
                                 val offsetY = state.offset.y * state.spread
                                 Box(
                                     Modifier.graphicsLayer {
-                                        val x = layerBounds.x - overlayPosition.x
-                                        translationX = x + (offsetX * pos).toPx()
+                                            val x = layerBounds.x - overlayPosition.x
+                                            translationX = x + (offsetX * pos).toPx()
 
-                                        val y = layerBounds.y - overlayPosition.y
-                                        translationY = y + (offsetY * pos).toPx()
-                                    }
+                                            val y = layerBounds.y - overlayPosition.y
+                                            translationY = y + (offsetY * pos).toPx()
+                                        }
+                                        .size(layerSize.toDpSize())
                                 ) {
                                     layer.content()
                                 }
@@ -242,7 +247,10 @@ fun SeparateLayer(content: @Composable () -> Unit) {
     Box(
         modifier =
             Modifier.thenIf(!inOverlay) {
-                    onGloballyPositioned { overlayLayer.windowPosition = it.positionInWindow() }
+                    onGloballyPositioned {
+                        overlayLayer.windowPosition = it.positionInWindow()
+                        overlayLayer.windowSize = it.size
+                    }
                 }
                 .thenIf(state.spread > 0f) { graphicsLayer { alpha = 0f } }
     ) {
@@ -397,6 +405,7 @@ internal class ExplodedLayersInstanceState internal constructor() {
 internal class OverlayLayer(content: @Composable () -> Unit) {
     var content by mutableStateOf(content)
     var windowPosition: Offset? by mutableStateOf(null)
+    var windowSize: IntSize? by mutableStateOf(null)
 }
 
 /** Contains the default values used by [ExplodedLayersRoot] and [rememberExplodedLayersState]. */
