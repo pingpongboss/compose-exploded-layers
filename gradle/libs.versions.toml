@@ -8,9 +8,9 @@ espressoCore = "3.7.0"
 lifecycleRuntimeKtx = "2.9.4"
 activityCompose = "1.11.0"
 navigationCompose = "2.9.5"
-composeBom = "2025.09.01"
+composeBom = "2025.10.00"
 compose = "1.9.0"
-material3 = "1.10.0-alpha01"
+material3 = "1.10.0-alpha02"
 jetbrainsKotlinJvm = "2.2.20"
 
 [libraries]
