@@ -41,6 +41,8 @@ class MainActivity : ComponentActivity() {
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
 
     data object Buttons : BottomNavItem("buttons", Icons.Default.SmartButton, "Buttons")
+
+    data object Dialer : BottomNavItem("dialer", Icons.Default.Phone, "Dialer")
 }
 
 @Composable
