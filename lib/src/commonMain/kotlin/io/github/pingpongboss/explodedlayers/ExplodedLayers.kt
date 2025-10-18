@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
@@ -39,6 +40,7 @@ import androidx.compose.ui.unit.times
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
 import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Above
+import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Behind
 import kotlin.math.PI
 import kotlin.math.tan
 
@@ -121,46 +123,59 @@ fun ExplodedLayersRoot(
             }
         }
 
-        OverlayBox(
-            modifier =
-                modifier
-                    .skew(state)
-                    .onGloballyPositioned { overlayPosition = it.positionInWindow() }
-                    .thenIf(state.showBackground) {
-                        glass(alpha = state.spread, isDragging = isDragging)
-                    }
-                    .thenIf(state.interactive && state.spread > 0f) {
-                        draggableOffset(state, interactionSource)
-                    }
-        ) {
-            base {
-                val offsetX = instanceState.numLayers * state.offset.x * state.spread * sign
-                val offsetY = instanceState.numLayers * state.offset.y * state.spread * sign
-                Box(
-                    modifier =
-                        Modifier.safePadding(
-                            start = if (offsetX < 0.dp) abs(offsetX) else 0.dp,
-                            top = if (offsetY < 0.dp) abs(offsetY) else 0.dp,
-                            end = if (offsetX > 0.dp) abs(offsetX) else 0.dp,
-                            bottom = if (offsetY > 0.dp) abs(offsetY) else 0.dp,
-                        )
-                ) {
-                    if (state.spread > 0f) BlockTouches() // Blocks touches on the underlay.
-                    content()
-                }
-            }
+        val holes: MutableList<Rect> = mutableStateListOf()
 
-            overlay(zIndex = sign.toFloat()) {
-                // [SeparateLayer] compositions are rendered in this top-level overlay to prevent
-                // them from being clipped by their parents.
-                if (state.spread > 0f && instanceState.overlayLayers.isNotEmpty()) {
-                    CompositionLocalProvider(LocalInOverlay provides true) {
-                        with(LocalDensity.current) {
+        with(LocalDensity.current) {
+            OverlayBox(
+                modifier =
+                    modifier.skew(state).onGloballyPositioned {
+                        overlayPosition = it.positionInWindow()
+                    }
+            ) {
+                base {
+                    val offsetX = instanceState.numLayers * state.offset.x * state.spread * sign
+                    val offsetY = instanceState.numLayers * state.offset.y * state.spread * sign
+                    Box(
+                        modifier =
+                            Modifier.thenIf(state.showBackground) {
+                                    glass(
+                                        state = state.glassState,
+                                        alpha = state.spread,
+                                        isDragging = isDragging,
+                                        holes = holes,
+                                    )
+                                }
+                                .thenIf(state.interactive && state.spread > 0f) {
+                                    draggableOffset(state, interactionSource)
+                                }
+                                .safePadding(
+                                    start = if (offsetX < 0.dp) abs(offsetX) else 0.dp,
+                                    top = if (offsetY < 0.dp) abs(offsetY) else 0.dp,
+                                    end = if (offsetX > 0.dp) abs(offsetX) else 0.dp,
+                                    bottom = if (offsetY > 0.dp) abs(offsetY) else 0.dp,
+                                )
+                    ) {
+                        if (state.spread > 0f) BlockTouches() // Blocks touches on the underlay.
+                        content()
+                    }
+                }
+
+                overlay(zIndex = sign.toFloat()) {
+                    // [SeparateLayer] compositions are rendered in this top-level overlay to
+                    // prevent them from being clipped by their parents.
+                    if (state.spread > 0f && instanceState.overlayLayers.isNotEmpty()) {
+                        CompositionLocalProvider(LocalInOverlay provides true) {
+                            holes.clear()
                             instanceState.overlayLayers.forEachIndexed { i, layer ->
                                 val pos = i + 1
 
                                 val layerBounds = layer.windowPosition ?: return@forEachIndexed
                                 val layerSize = layer.windowSize?.toSize() ?: return@forEachIndexed
+
+                                val absolutePosition = layerBounds - overlayPosition
+                                if (state.direction == Behind) {
+                                    holes += Rect(absolutePosition, layerSize)
+                                }
 
                                 val offsetX = state.offset.x * state.spread * sign
                                 val offsetY = state.offset.y * state.spread * sign
@@ -353,6 +368,7 @@ fun rememberExplodedLayersState(
     offset: DpOffset = ExplodedLayersDefaults.offset(),
     initialDirection: ExplodedLayersDirection = Above,
     @FloatRange(from = 0.0, to = 1.0) initialSpread: Float = 1f,
+    glassState: GlassState = rememberGlassState(),
 ): ExplodedLayersState {
     return remember {
         ExplodedLayersState(
@@ -361,6 +377,7 @@ fun rememberExplodedLayersState(
             initialOffset = offset,
             initialDirection = initialDirection,
             spread = initialSpread,
+            glassState = glassState,
         )
     }
 }
@@ -436,6 +453,7 @@ internal constructor(
     val initialOffset: DpOffset,
     initialDirection: ExplodedLayersDirection,
     spread: Float,
+    val glassState: GlassState,
 ) {
 
     /**
