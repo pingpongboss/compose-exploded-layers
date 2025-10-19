@@ -388,7 +388,7 @@ private fun MagicCueChip(
     Row(
         modifier =
             Modifier.clip(shape)
-                .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+                .border(1.dp, Color.Yellow, shape)
                 .background(color = MaterialTheme.colorScheme.surface)
                 .clickable { onSuggestionClicked(suggestion.label) }
                 .padding(8.dp),
