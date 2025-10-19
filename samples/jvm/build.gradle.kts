@@ -17,7 +17,9 @@ kotlin {
         binaries {
             // Configures a JavaExec task named "runJvm" and a Gradle distribution for the "main"
             // compilation in this target
-            executable { mainClass.set("io.github.pingpongboss.explodedlayers.samples.jvm.MainKt") }
+            executable {
+                mainClass.set("io.github.pingpongboss.explodedlayers.samples.jvm.Main_jvmKt")
+            }
         }
     }
 
@@ -39,7 +41,7 @@ kotlin {
 
 compose.desktop {
     application {
-        mainClass = "io.github.pingpongboss.explodedlayers.samples.jvm.MainKt"
+        mainClass = "io.github.pingpongboss.explodedlayers.samples.jvm.Main_jvmKt"
         nativeDistributions {
             targetFormats(TargetFormat.AppImage, TargetFormat.Exe, TargetFormat.Deb)
         }

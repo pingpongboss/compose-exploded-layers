@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.toggle
+package io.github.pingpongboss.explodedlayers.samples.common.toggle
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android
+package io.github.pingpongboss.explodedlayers.samples.common
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +24,7 @@ import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Behind
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
 import io.github.pingpongboss.explodedlayers.rememberGlassState
-import io.github.pingpongboss.explodedlayers.samples.android.toggle.MultiToggle
+import io.github.pingpongboss.explodedlayers.samples.common.toggle.MultiToggle
 
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 
