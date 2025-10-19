@@ -27,7 +27,7 @@ import io.github.pingpongboss.explodedlayers.separateLayer
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 
 @Composable
-fun SampleBody(innerPadding: PaddingValues) {
+fun SimpleScreen(innerPadding: PaddingValues) {
     Box(
         modifier = Modifier.fillMaxSize().padding(innerPadding),
         contentAlignment = Alignment.Center,
