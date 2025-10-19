@@ -11,7 +11,8 @@ import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
-    ComposeViewport(document.body!!) {
+    val frame = document.getElementById("phone-frame")!!
+    ComposeViewport(frame) {
         SampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
     }
 }

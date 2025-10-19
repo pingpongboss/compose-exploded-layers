@@ -3,10 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo app</title>
-    <link type="text/css" rel="stylesheet" href="styles.css">
-    <script type="application/javascript" src="composeApp.js"></script>
+    <title>Exploded Layers Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="composeApp.js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #111;
+        }
+
+        #phone-frame {
+            width: 540px;
+            height: 960px;
+            background: #000;
+            border-radius: 28px;
+            box-shadow:
+                0 0 40px rgba(0, 0, 0, 0.5),
+                0 0 0 8px rgba(20, 20, 20, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
 </head>
 <body>
+<div id="phone-frame">
+    <!-- Compose WASM canvas will appear here -->
+</div>
 </body>
 </html>
