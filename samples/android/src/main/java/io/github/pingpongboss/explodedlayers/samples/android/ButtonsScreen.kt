@@ -48,7 +48,7 @@ import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffect
 import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.ShadyButton
 import io.github.pingpongboss.explodedlayers.samples.android.buttons.keycap.KeycapButton
 import io.github.pingpongboss.explodedlayers.samples.android.grid.Grid
-import io.github.pingpongboss.explodedlayers.samples.android.theme.ExplodedLayersSampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
@@ -282,5 +282,5 @@ private fun SampleGrid(
 @Preview(showBackground = true)
 @Composable
 fun SampleRootPreview() {
-    ExplodedLayersSampleTheme { ButtonsScreen() }
+    SampleTheme { ButtonsScreen() }
 }

@@ -6,12 +6,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.ComposeViewport
 import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavigation
-import io.github.pingpongboss.explodedlayers.samples.common.theme.ExplodedLayersSampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
 import kotlinx.browser.document
 
 @OptIn(ExperimentalComposeUiApi::class)
 fun main() {
     ComposeViewport(document.body!!) {
-        ExplodedLayersSampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
+        SampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
     }
 }

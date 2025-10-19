@@ -52,14 +52,12 @@ kotlin {
 }
 
 android {
-    namespace = "io.github.pingpongboss"
+    namespace = "io.github.pingpongboss.explodedlayers"
     compileSdk = 36
 
     defaultConfig {
         minSdk = 21
         lint.targetSdk = 36
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {

@@ -30,6 +30,7 @@ import io.github.pingpongboss.explodedlayers.samples.common.AppScreen
 import io.github.pingpongboss.explodedlayers.samples.common.DialerApp
 import io.github.pingpongboss.explodedlayers.samples.common.MessagesApp
 import io.github.pingpongboss.explodedlayers.samples.common.SimpleScreen
+import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
 
 sealed class TabNavItem(
     val icon: ImageVector,
@@ -40,7 +41,7 @@ sealed class TabNavItem(
     class Buttons(content: @Composable () -> Unit) :
         TabNavItem(icon = Icons.Default.SmartButton, label = label, content = content) {
         companion object {
-            @Suppress("ConstPropertyName") const val label = "Buttons"
+            const val label = "Buttons"
         }
     }
 
@@ -55,14 +56,14 @@ sealed class TabNavItem(
         TabNavItem(
             icon = Icons.Default.Phone,
             label = "Dialer",
-            content = { AppScreen { DialerApp() } },
+            content = { SampleTheme(darkTheme = true) { AppScreen { DialerApp() } } },
         )
 
     data object Messages :
         TabNavItem(
             icon = Icons.AutoMirrored.Filled.Message,
             label = "Messages",
-            content = { AppScreen { MessagesApp() } },
+            content = { SampleTheme(darkTheme = true) { AppScreen { MessagesApp() } } },
         )
 }
 

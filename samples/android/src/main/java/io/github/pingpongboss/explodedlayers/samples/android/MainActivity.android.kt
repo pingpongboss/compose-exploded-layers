@@ -9,9 +9,9 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.github.pingpongboss.explodedlayers.samples.android.theme.ExplodedLayersSampleTheme
 import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavItem
 import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavigation
+import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -19,12 +19,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-            ExplodedLayersSampleTheme {
+            SampleTheme {
                 TabNavigation(
                     tabs =
                         listOf(
                             TabNavItem.Buttons {
-                                ExplodedLayersSampleTheme(darkTheme = false) { ButtonsScreen() }
+                                SampleTheme(darkTheme = false) { ButtonsScreen() }
                             },
                             TabNavItem.Simple,
                             TabNavItem.Dialer,

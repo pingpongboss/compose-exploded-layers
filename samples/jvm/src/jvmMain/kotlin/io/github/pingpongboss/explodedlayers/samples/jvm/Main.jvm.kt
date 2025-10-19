@@ -6,10 +6,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavigation
-import io.github.pingpongboss.explodedlayers.samples.common.theme.ExplodedLayersSampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
 
 fun main() = application {
     Window(onCloseRequest = ::exitApplication, title = "Exploded Layers (Desktop)") {
-        ExplodedLayersSampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
+        SampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
     }
 }

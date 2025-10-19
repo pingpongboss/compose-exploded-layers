@@ -6,10 +6,10 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 
-private val DarkColorScheme =
+internal val DarkColorScheme =
     darkColorScheme(primary = Purple80, secondary = PurpleGrey80, tertiary = Pink80)
 
-private val LightColorScheme =
+internal val LightColorScheme =
     lightColorScheme(
         primary = Purple40,
         secondary = PurpleGrey40,
@@ -26,10 +26,19 @@ private val LightColorScheme =
         */
     )
 
+@Composable expect fun isPlatformInDarkTheme(): Boolean
+
 @Composable
-fun ExplodedLayersSampleTheme(
-    darkTheme: Boolean = false,
+expect fun SampleTheme(
+    darkTheme: Boolean = isPlatformInDarkTheme(),
     dynamicColor: Boolean = true,
+    content: @Composable () -> Unit,
+)
+
+@Composable
+internal fun SampleThemeBase(
+    darkTheme: Boolean,
+    dynamicColor: Boolean,
     content: @Composable () -> Unit,
 ) {
     val colorScheme =
