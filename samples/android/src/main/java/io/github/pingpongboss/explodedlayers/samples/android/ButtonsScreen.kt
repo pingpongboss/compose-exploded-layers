@@ -1,8 +1,6 @@
 package io.github.pingpongboss.explodedlayers.samples.android
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +22,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,10 +45,9 @@ import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffect
 import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.ShadyButton
 import io.github.pingpongboss.explodedlayers.samples.android.buttons.keycap.KeycapButton
 import io.github.pingpongboss.explodedlayers.samples.android.grid.Grid
+import io.github.pingpongboss.explodedlayers.samples.common.animation.InfiniteAnimationEffect
 import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.time.Duration.Companion.seconds
 
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 private val EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET = DpOffset(x = -40.dp, y = 40.dp)
@@ -79,7 +75,7 @@ fun ButtonsScreen() {
                     initialSpread = 0f,
                 )
 
-            var isAnimating by remember { mutableStateOf(false) }
+            var isAnimating by remember { mutableStateOf(true) }
             val progressAnim = remember { Animatable(0f) }
             InfiniteAnimationEffect(isAnimating, progressAnim) { explodedLayersState1.spread = it }
 
@@ -134,35 +130,6 @@ fun ButtonsScreen() {
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun InfiniteAnimationEffect(
-    enabled: Boolean,
-    animatable: Animatable<Float, AnimationVector1D>,
-    onAnimationUpdate: (Float) -> Unit = {},
-) {
-    LaunchedEffect(enabled) {
-        if (enabled) {
-            launch {
-                while (true) {
-                    animatable.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(durationMillis = 2000),
-                    )
-                    delay(1.seconds)
-                    animatable.animateTo(
-                        targetValue = MIN_SLIDER_VALUE,
-                        animationSpec = tween(durationMillis = 2000),
-                    )
-                    delay(1.seconds)
-                }
-            }
-        }
-    }
-    if (enabled) {
-        onAnimationUpdate(animatable.value)
     }
 }
 
