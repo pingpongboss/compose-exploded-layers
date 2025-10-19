@@ -27,17 +27,26 @@ fun MultiToggle(
     onSelectionChange: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(modifier = modifier.height(IntrinsicSize.Min).border(BorderStroke(1.dp, Color.LightGray))) {
+    Row(
+        modifier =
+            modifier
+                .height(IntrinsicSize.Min)
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outline))
+    ) {
         options.forEachIndexed { index, option ->
             val selected = option == current
             if (index != 0) {
-                Divider(color = Color.LightGray, modifier = Modifier.fillMaxHeight().width(1.dp))
+                Divider(
+                    color = MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.fillMaxHeight().width(1.dp),
+                )
             }
             Box(
                 modifier =
                     Modifier.weight(1f)
                         .background(
-                            if (selected) MaterialTheme.colorScheme.primary else Color.Transparent
+                            if (selected) MaterialTheme.colorScheme.primaryContainer
+                            else Color.Transparent
                         )
                         .toggleable(
                             value = selected,
@@ -48,7 +57,9 @@ fun MultiToggle(
             ) {
                 Text(
                     option,
-                    color = if (selected) Color.White else MaterialTheme.colorScheme.onSurface,
+                    color =
+                        if (selected) MaterialTheme.colorScheme.onPrimaryContainer
+                        else MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(4.dp),
                 )
             }

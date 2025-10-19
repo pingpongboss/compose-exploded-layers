@@ -344,7 +344,7 @@ private fun MessagesSection(
                                 if (received) {
                                     MaterialTheme.colorScheme.surfaceContainer
                                 } else {
-                                    MaterialTheme.colorScheme.onPrimaryContainer
+                                    MaterialTheme.colorScheme.inversePrimary
                                 }
                         )
                         .padding(horizontal = 16.dp, vertical = 8.dp),
