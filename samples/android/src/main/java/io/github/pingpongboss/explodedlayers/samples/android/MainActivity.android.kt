@@ -8,10 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.TextAutoSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.SmartButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -21,7 +17,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,6 +28,7 @@ import io.github.pingpongboss.explodedlayers.samples.android.theme.ExplodedLayer
 import io.github.pingpongboss.explodedlayers.samples.common.AppScreen
 import io.github.pingpongboss.explodedlayers.samples.common.DialerApp
 import io.github.pingpongboss.explodedlayers.samples.common.MessagesApp
+import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavItem
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,19 +39,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
-
-    data object Buttons : BottomNavItem("buttons", Icons.Default.SmartButton, "Buttons")
-
-    data object Dialer : BottomNavItem("dialer", Icons.Default.Phone, "Dialer")
-
-    data object Messages : BottomNavItem("messages", Icons.AutoMirrored.Filled.Message, "Messages")
-}
-
 @Composable
 private fun MainScreen() {
     val navController = rememberNavController()
-    val navItems = listOf(BottomNavItem.Buttons, BottomNavItem.Dialer, BottomNavItem.Messages)
+    val navItems = listOf(TabNavItem.Buttons, TabNavItem.Dialer, TabNavItem.Messages)
 
     Scaffold(
         bottomBar = {
@@ -97,16 +84,16 @@ private fun MainScreen() {
 
             NavHost(
                 navController = navController,
-                startDestination = BottomNavItem.Buttons.route,
+                startDestination = TabNavItem.Buttons.route,
                 modifier = Modifier.padding(bottom = innerPadding.calculateBottomPadding()),
             ) {
-                composable(BottomNavItem.Buttons.route) {
+                composable(TabNavItem.Buttons.route) {
                     ExplodedLayersSampleTheme(darkTheme = false) { ButtonsScreen() }
                 }
-                composable(BottomNavItem.Dialer.route) {
+                composable(TabNavItem.Dialer.route) {
                     ExplodedLayersSampleTheme(darkTheme = true) { AppScreen { DialerApp() } }
                 }
-                composable(BottomNavItem.Messages.route) {
+                composable(TabNavItem.Messages.route) {
                     ExplodedLayersSampleTheme(darkTheme = true) { AppScreen { MessagesApp() } }
                 }
             }

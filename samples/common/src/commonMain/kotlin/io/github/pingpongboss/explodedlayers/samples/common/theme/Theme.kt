@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.wasm.ui.theme
+package io.github.pingpongboss.explodedlayers.samples.common.theme
 
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
@@ -27,7 +27,7 @@ private val LightColorScheme =
     )
 
 @Composable
-fun ExplodedlayersSampleTheme(
+fun ExplodedLayersSampleTheme(
     darkTheme: Boolean = false,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit,

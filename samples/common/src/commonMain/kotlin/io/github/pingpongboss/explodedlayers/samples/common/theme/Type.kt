@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.wasm.ui.theme
+package io.github.pingpongboss.explodedlayers.samples.common.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
