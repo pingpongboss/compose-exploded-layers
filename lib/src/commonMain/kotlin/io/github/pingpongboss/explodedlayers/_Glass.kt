@@ -51,6 +51,11 @@ internal fun Modifier.glass(
         )
 
     return this.drawBehind {
+        if (holes.isEmpty()) {
+            drawGlass(state, alpha, sweepAnim, isDragging)
+            return@drawBehind
+        }
+
         drawIntoCanvas { canvas ->
             val outside =
                 Path().apply {

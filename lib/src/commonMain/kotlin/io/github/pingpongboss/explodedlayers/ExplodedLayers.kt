@@ -137,7 +137,7 @@ fun ExplodedLayersRoot(
                     val offsetY = instanceState.numLayers * state.offset.y * state.spread * sign
                     Box(
                         modifier =
-                            Modifier.thenIf(state.showBackground) {
+                            Modifier.thenIf(state.showBackground && state.spread > 0f) {
                                     glass(
                                         state = state.glassState,
                                         alpha = state.spread,
@@ -155,7 +155,9 @@ fun ExplodedLayersRoot(
                                     bottom = if (offsetY > 0.dp) abs(offsetY) else 0.dp,
                                 )
                     ) {
-                        if (state.spread > 0f) BlockTouches() // Blocks touches on the underlay.
+                        // Blocks touches on the underlay by layering under the base content.
+                        if (state.spread > 0f) BlockTouches()
+
                         content()
                     }
                 }
@@ -283,7 +285,9 @@ fun SeparateLayer(content: @Composable () -> Unit) {
                 .thenIf(state.spread > 0f) { graphicsLayer { alpha = 0f } }
     ) {
         content()
-        if (state.spread > 0f) BlockTouches() // Blocks touches on the invisible original.
+
+        // Blocks touches on the invisible original by layering over the content.
+        if (state.spread > 0f) BlockTouches()
     }
 }
 
