@@ -39,8 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.zIndex
-import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Above
-import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Behind
+import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.Behind
+import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.OnTop
 import kotlin.math.PI
 import kotlin.math.tan
 
@@ -90,7 +90,8 @@ private val LocalInOverlay = compositionLocalOf { false }
  * }
  * ```
  *
- * @param state The [ExplodedLayersState] controlling interactivity, offset direction, and spread.
+ * @param state The [ExplodedLayersState] controlling interactivity, offset direction, spread, and
+ *   other configurations.
  * @param modifier Optional [Modifier] applied to the root container.
  * @param content The composable hierarchy to render with exploded layering.
  * @see rememberExplodedLayersState
@@ -112,7 +113,7 @@ fun ExplodedLayersRoot(
         LocalInstanceState provides instanceState,
         LocalInOverlay provides false,
     ) {
-        val sign = state.direction.sign
+        val sign = state.zOrder.sign
         var overlayPosition by remember { mutableStateOf(Offset.Zero) }
         var isDragging by remember { mutableStateOf(false) }
 
@@ -175,7 +176,7 @@ fun ExplodedLayersRoot(
                                 val layerSize = layer.windowSize?.toSize() ?: return@forEachIndexed
 
                                 val absolutePosition = layerBounds - overlayPosition
-                                if (state.direction == Behind) {
+                                if (state.zOrder == Behind) {
                                     holes += Rect(absolutePosition, layerSize)
                                 }
 
@@ -227,7 +228,7 @@ fun Modifier.separateLayer(): Modifier {
     DisposableEffect(Unit) { onDispose { instanceState.numLayers-- } }
 
     return if (state.spread > 0f) {
-        val sign = state.direction.sign
+        val sign = state.zOrder.sign
         offset(state.offset.x * state.spread * sign, state.offset.y * state.spread * sign)
     } else {
         this
@@ -370,7 +371,7 @@ fun rememberExplodedLayersState(
     interactive: Boolean = true,
     showBackground: Boolean = true,
     offset: DpOffset = ExplodedLayersDefaults.offset(),
-    initialDirection: ExplodedLayersDirection = Above,
+    initialZOrder: ExplodedLayersZOrder = OnTop,
     @FloatRange(from = 0.0, to = 1.0) initialSpread: Float = 1f,
     glassState: GlassState = rememberGlassState(),
 ): ExplodedLayersState {
@@ -379,7 +380,7 @@ fun rememberExplodedLayersState(
             interactive = interactive,
             showBackground = showBackground,
             initialOffset = offset,
-            initialDirection = initialDirection,
+            initialZOrder = initialZOrder,
             spread = initialSpread,
             glassState = glassState,
         )
@@ -399,24 +400,24 @@ annotation class ExperimentalExplodedLayersApi
  *
  * This determines the z-ordering and visual stacking of separated layers.
  *
- * @see ExplodedLayersState.direction
+ * @see ExplodedLayersState.zOrder
  */
-sealed class ExplodedLayersDirection(internal val sign: Int) {
+sealed class ExplodedLayersZOrder(internal val sign: Int) {
 
     /**
-     * Layers are exploded above the base content.
+     * Layers are exploded on top of the base content.
      *
      * This is the default direction.
      */
-    data object Above : ExplodedLayersDirection(sign = 1)
+    data object OnTop : ExplodedLayersZOrder(sign = 1)
 
     /**
-     * Layers are exploded below the base content. If `showBackground = true` is passed into
+     * Layers are exploded behind the base content. If `showBackground = true` is passed into
      * [rememberExplodedLayersState], a visual hole will be cut out of the base layer.
      *
      * This currently only supports [SeparateLayer] but not [Modifier.separateLayer].
      */
-    @ExperimentalExplodedLayersApi data object Behind : ExplodedLayersDirection(sign = -1)
+    @ExperimentalExplodedLayersApi data object Behind : ExplodedLayersZOrder(sign = -1)
 }
 
 /**
@@ -455,7 +456,7 @@ internal constructor(
     val interactive: Boolean,
     val showBackground: Boolean,
     val initialOffset: DpOffset,
-    initialDirection: ExplodedLayersDirection,
+    initialZOrder: ExplodedLayersZOrder,
     spread: Float,
     val glassState: GlassState,
 ) {
@@ -484,7 +485,13 @@ internal constructor(
     @setparam:FloatRange(from = 0.0, to = 1.0)
     var spread: Float by mutableFloatStateOf(spread)
 
-    var direction: ExplodedLayersDirection by mutableStateOf(initialDirection)
+    /**
+     * Determines the stacking order of layers, controlling whether they explode on top of or behind
+     * the base content.
+     * - [OnTop]: Layers are rendered with increasing Z-indices, appearing in front of the base.
+     * - [Behind]: Layers are rendered with decreasing Z-indices, appearing behind the base.
+     */
+    var zOrder: ExplodedLayersZOrder by mutableStateOf(initialZOrder)
 }
 
 internal class ExplodedLayersInstanceState internal constructor() {

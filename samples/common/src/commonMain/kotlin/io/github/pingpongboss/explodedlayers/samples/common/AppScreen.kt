@@ -30,9 +30,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.ExperimentalExplodedLayersApi
-import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Above
-import io.github.pingpongboss.explodedlayers.ExplodedLayersDirection.Behind
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
+import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.Behind
+import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.OnTop
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
 import io.github.pingpongboss.explodedlayers.rememberGlassState
 import io.github.pingpongboss.explodedlayers.samples.common.animation.InfiniteAnimationEffect
@@ -63,18 +63,17 @@ fun AppScreen(content: @Composable () -> Unit) {
             val state =
                 rememberExplodedLayersState(
                     interactive = false,
-                    initialDirection = Above,
+                    initialZOrder = OnTop,
                     initialSpread = MIN_SLIDER_VALUE,
                     glassState = glassState,
                 )
 
-            val directionOptions = listOf(Above, Behind)
+            val zOrderOptions = listOf(OnTop, Behind)
             MultiToggle(
-                options = directionOptions.map { it::class.simpleName ?: "" },
-                current = state.direction::class.simpleName ?: "",
+                options = zOrderOptions.map { it::class.simpleName ?: "" },
+                current = state.zOrder::class.simpleName ?: "",
                 onSelectionChange = { selectedString ->
-                    state.direction =
-                        directionOptions.first { it::class.simpleName == selectedString }
+                    state.zOrder = zOrderOptions.first { it::class.simpleName == selectedString }
                 },
             )
 
