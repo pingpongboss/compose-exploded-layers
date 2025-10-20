@@ -244,10 +244,12 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
                             delay(500.milliseconds)
                             visible = true
                         }
-                        AnimatedVisibility(visible = visible) {
+                        AnimatedVisibility(
+                            visible = visible,
+                            modifier = Modifier.align(Alignment.End),
+                        ) {
                             SuggestionsRow(
                                 suggestions = item.suggestions,
-                                modifier = Modifier.align(Alignment.End),
                                 onSuggestionClicked = { suggestion ->
                                     scope.launch {
                                         delay(300.milliseconds)
@@ -348,7 +350,6 @@ private fun MessagesSection(messages: List<MessageItem>, received: Boolean, modi
 @Composable
 private fun SuggestionsRow(
     suggestions: List<MagicCueSuggestionItem>,
-    modifier: Modifier,
     onSuggestionClicked: (String) -> Unit,
     scrolledToBottom: Boolean,
 ) {
@@ -356,7 +357,7 @@ private fun SuggestionsRow(
 
     SeparateLayer {
         Row(
-            modifier = modifier.horizontalScroll(scrollState),
+            modifier = Modifier.horizontalScroll(scrollState),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             for (suggestion in suggestions) {
