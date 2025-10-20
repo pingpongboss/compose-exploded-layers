@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.Speaker
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,10 +39,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.SeparateLayer
+import io.github.pingpongboss.explodedlayers.samples.common.dimension.adaptive
 
 @Composable
 fun DialerApp() {
-    Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+    Column(verticalArrangement = Arrangement.spacedBy(24.dp.adaptive())) {
         Body(modifier = Modifier.fillMaxWidth().weight(1f))
         Footer(modifier = Modifier.fillMaxWidth())
     }
@@ -52,13 +54,13 @@ private fun Body(modifier: Modifier) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp.adaptive()),
     ) {
-        Spacer(Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp.adaptive()))
 
-        Text(text = "Calling...")
-        Text(text = "Coppelia", style = MaterialTheme.typography.displayMedium)
-        Text(text = "+1 212-858-5001")
+        Text(text = "Calling...", style = LocalTextStyle.current.adaptive())
+        Text(text = "Coppelia", style = MaterialTheme.typography.displayMedium.adaptive())
+        Text(text = "+1 212-858-5001", style = LocalTextStyle.current.adaptive())
 
         MagicCue()
     }
@@ -77,8 +79,8 @@ private fun MagicCue() {
                     .border(width = 1.dp, color = Color.Yellow, shape = shape)
                     .background(MaterialTheme.colorScheme.surfaceContainer)
                     .verticalScroll(scrollState)
-                    .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp),
+                    .padding(horizontal = 16.dp, vertical = 16.dp.adaptive()),
+            verticalArrangement = Arrangement.spacedBy(10.dp.adaptive()),
         ) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -94,10 +96,10 @@ private fun MagicCue() {
                     Icon(
                         imageVector = Icons.Default.PhonelinkLock,
                         contentDescription = null,
-                        modifier = Modifier.size(18.dp),
+                        modifier = Modifier.size(18.dp.adaptive()),
                     )
                 }
-                Text(text = "Magic Cue", style = MaterialTheme.typography.labelMedium)
+                Text(text = "Magic Cue", style = MaterialTheme.typography.labelMedium.adaptive())
             }
 
             Section()
@@ -113,12 +115,15 @@ private fun Section() {
         modifier =
             Modifier.clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp.adaptive()),
+        verticalArrangement = Arrangement.spacedBy(12.dp.adaptive()),
     ) {
-        Text(text = "Your reservation", style = MaterialTheme.typography.headlineMedium)
+        Text(text = "Your reservation", style = MaterialTheme.typography.headlineMedium.adaptive())
         ReservationGrid()
-        Text(text = "Was this result helpful?", style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = "Was this result helpful?",
+            style = MaterialTheme.typography.labelSmall.adaptive(),
+        )
     }
 }
 
@@ -144,10 +149,10 @@ private fun InfoCell(header: String, body: String, modifier: Modifier) {
             modifier
                 .clip(RoundedCornerShape(12.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(8.dp)
+                .padding(horizontal = 8.dp, vertical = 8.dp.adaptive())
     ) {
-        Text(text = header, style = MaterialTheme.typography.labelMedium)
-        Text(text = body, style = MaterialTheme.typography.titleLarge)
+        Text(text = header, style = MaterialTheme.typography.labelMedium.adaptive())
+        Text(text = body, style = MaterialTheme.typography.titleLarge.adaptive())
     }
 }
 
@@ -158,9 +163,9 @@ private fun Footer(modifier: Modifier) {
             modifier
                 .clip(RoundedCornerShape(18.dp))
                 .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(16.dp),
+                .padding(horizontal = 16.dp, vertical = 16.dp.adaptive()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp.adaptive()),
     ) {
         ButtonRow()
         EndCallButton()
@@ -194,12 +199,15 @@ private fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp.adaptive()),
     ) {
-        FilledTonalIconButton(onClick = {}, modifier = Modifier.fillMaxWidth().height(64.dp)) {
+        FilledTonalIconButton(
+            onClick = {},
+            modifier = Modifier.fillMaxWidth().height(64.dp.adaptive()),
+        ) {
             Icon(imageVector = icon, contentDescription = label, modifier = Modifier.size(28.dp))
         }
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
+        Text(text = label, style = MaterialTheme.typography.labelMedium.adaptive())
     }
 }
 
@@ -207,7 +215,7 @@ private fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier
 private fun EndCallButton() {
     FilledTonalIconButton(
         onClick = {},
-        modifier = Modifier.width(160.dp).height(64.dp),
+        modifier = Modifier.width(160.dp).height(64.dp.adaptive()),
         colors =
             IconButtonDefaults.filledIconButtonColors(
                 containerColor = Color.Red,

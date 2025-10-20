@@ -14,7 +14,6 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         state = rememberWindowState(width = 540.dp, height = 960.dp),
         title = "Exploded Layers (Desktop)",
-        resizable = false,
     ) {
         SampleTheme { TabNavigation(modifier = Modifier.padding(top = 16.dp)) }
     }

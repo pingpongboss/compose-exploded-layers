@@ -75,7 +75,7 @@ fun ButtonsScreen() {
                     initialSpread = 0f,
                 )
 
-            var isAnimating by remember { mutableStateOf(true) }
+            var isAnimating by remember { mutableStateOf(false) }
             val progressAnim = remember { Animatable(0f) }
             InfiniteAnimationEffect(isAnimating, progressAnim) { explodedLayersState1.spread = it }
 
