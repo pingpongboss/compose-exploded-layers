@@ -63,6 +63,10 @@ import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.SeparateLayer
 import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.MessagesItem
 import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.MessagesItem.MessageItem
+import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.SectionFooterItem
+import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.SectionHeaderItem
+import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.SuggestionsItem
+import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.SuggestionsItem.MagicCueSuggestionItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
@@ -136,69 +140,50 @@ sealed interface ConversationItem {
 
 private val conversationItems =
     mutableStateListOf(
-        ConversationItem.SectionHeaderItem(label = "Sunday, Jul 7 - 2:15 PM"),
-        ConversationItem.MessagesItem(
-            messages =
-                listOf(
-                    ConversationItem.MessagesItem.MessageItem(
-                        label = "When are you visiting again?"
-                    )
-                ),
+        SectionHeaderItem(label = "Sunday, Jul 7 - 2:15 PM"),
+        MessagesItem(
+            messages = listOf(MessageItem(label = "When are you visiting again?")),
             received = true,
         ),
-        ConversationItem.MessagesItem(
+        MessagesItem(
             messages =
                 listOf(
-                    ConversationItem.MessagesItem.MessageItem(label = "Next week!"),
-                    ConversationItem.MessagesItem.MessageItem(
-                        label = "Lol can't believe you forgot"
-                    ),
+                    MessageItem(label = "Next week!"),
+                    MessageItem(label = "Lol can't believe you forgot"),
                 ),
             received = false,
         ),
-        ConversationItem.MessagesItem(
+        MessagesItem(
             messages =
                 listOf(
-                    ConversationItem.MessagesItem.MessageItem(label = "I so did not"),
-                    ConversationItem.MessagesItem.MessageItem(
-                        label = "Let's grab dinner while you're here?"
-                    ),
+                    MessageItem(label = "I so did not"),
+                    MessageItem(label = "Let's grab dinner while you're here?"),
                 ),
             received = true,
         ),
-        ConversationItem.MessagesItem(
-            messages =
-                listOf(
-                    ConversationItem.MessagesItem.MessageItem(label = "I'll look for something")
-                ),
+        MessagesItem(
+            messages = listOf(MessageItem(label = "I'll look for something")),
             received = false,
         ),
-        ConversationItem.SectionHeaderItem(label = "Tuesday, Jul 29 - 7:30 PM"),
-        ConversationItem.MessagesItem(
-            messages = listOf(ConversationItem.MessagesItem.MessageItem(label = "Yo!")),
-            received = false,
-        ),
-        ConversationItem.MessagesItem(
+        SectionHeaderItem(label = "Tuesday, Jul 29 - 7:30 PM"),
+        MessagesItem(messages = listOf(MessageItem(label = "Yo!")), received = false),
+        MessagesItem(
             messages =
                 listOf(
-                    ConversationItem.MessagesItem.MessageItem(
-                        label = "Hey, excited for your trip to New York!"
-                    ),
-                    ConversationItem.MessagesItem.MessageItem(
-                        label = "Where is the dinner reservation?"
-                    ),
+                    MessageItem(label = "Hey, excited for your trip to New York!"),
+                    MessageItem(label = "Where is the dinner reservation?"),
                 ),
             received = true,
         ),
-        ConversationItem.SectionFooterItem(label = "7:31 PM", received = true),
-        ConversationItem.SuggestionsItem(
+        SectionFooterItem(label = "7:31 PM", received = true),
+        SuggestionsItem(
             suggestions =
                 listOf(
-                    ConversationItem.SuggestionsItem.MagicCueSuggestionItem(
+                    MagicCueSuggestionItem(
                         label = "207 W 14th St, New York, NY",
                         attribution = "Reservation at Coppelia",
                     ),
-                    ConversationItem.SuggestionsItem.MagicCueSuggestionItem(
+                    MagicCueSuggestionItem(
                         label = "Coppelia",
                         attribution = "Reservation at Coppelia",
                     ),
@@ -224,14 +209,14 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
             val scope = rememberCoroutineScope()
             for (item in conversationItems) {
                 when (item) {
-                    is ConversationItem.SectionHeaderItem -> {
+                    is SectionHeaderItem -> {
                         Text(
                             text = item.label,
                             modifier = Modifier.align(Alignment.CenterHorizontally),
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }
-                    is ConversationItem.MessagesItem -> {
+                    is MessagesItem -> {
                         MessagesSection(
                             messages = item.messages,
                             received = item.received,
@@ -241,7 +226,7 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
                                 ),
                         )
                     }
-                    is ConversationItem.SectionFooterItem -> {
+                    is SectionFooterItem -> {
                         Text(
                             text = item.label,
                             modifier =
@@ -251,7 +236,7 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
                             style = MaterialTheme.typography.labelSmall,
                         )
                     }
-                    is ConversationItem.SuggestionsItem -> {
+                    is SuggestionsItem -> {
                         var visible by remember { mutableStateOf(false) }
                         LaunchedEffect(Unit) {
                             delay(500.milliseconds)
@@ -303,11 +288,7 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
 }
 
 @Composable
-private fun MessagesSection(
-    messages: List<ConversationItem.MessagesItem.MessageItem>,
-    received: Boolean,
-    modifier: Modifier,
-) {
+private fun MessagesSection(messages: List<MessageItem>, received: Boolean, modifier: Modifier) {
     Column(
         modifier =
             modifier.clip(
@@ -363,7 +344,7 @@ private fun MessagesSection(
 
 @Composable
 private fun SuggestionsRow(
-    suggestions: List<ConversationItem.SuggestionsItem.MagicCueSuggestionItem>,
+    suggestions: List<MagicCueSuggestionItem>,
     modifier: Modifier,
     onSuggestionClicked: (String) -> Unit,
 ) {
@@ -383,7 +364,7 @@ private fun SuggestionsRow(
 
 @Composable
 private fun MagicCueChip(
-    suggestion: ConversationItem.SuggestionsItem.MagicCueSuggestionItem,
+    suggestion: MagicCueSuggestionItem,
     onSuggestionClicked: (String) -> Unit,
 ) {
     val shape = RoundedCornerShape(24.dp)
