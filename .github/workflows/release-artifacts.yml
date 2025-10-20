@@ -96,7 +96,7 @@ jobs:
   # 💻 DESKTOP JAR
   # -------------------------------------------------------------
   publish-jvm:
-    name: 🖥️ Build & Upload Desktop JARs (macOS / Windows / Linux)
+    name: 🖥️ Build & Upload Desktop JARs
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
