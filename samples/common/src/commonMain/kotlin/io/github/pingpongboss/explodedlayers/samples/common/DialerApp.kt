@@ -113,7 +113,8 @@ private fun MagicCue() {
 private fun Section() {
     Column(
         modifier =
-            Modifier.clip(RoundedCornerShape(16.dp))
+            Modifier.fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(horizontal = 16.dp, vertical = 16.dp.adaptive()),
         verticalArrangement = Arrangement.spacedBy(12.dp.adaptive()),
@@ -203,9 +204,13 @@ private fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier
     ) {
         FilledTonalIconButton(
             onClick = {},
-            modifier = Modifier.fillMaxWidth().height(64.dp.adaptive()),
+            modifier = Modifier.fillMaxWidth().height(48.dp.adaptive()),
         ) {
-            Icon(imageVector = icon, contentDescription = label, modifier = Modifier.size(28.dp))
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                modifier = Modifier.size(28.dp.adaptive()),
+            )
         }
         Text(text = label, style = MaterialTheme.typography.labelMedium.adaptive())
     }
@@ -215,7 +220,7 @@ private fun ButtonWithLabel(icon: ImageVector, label: String, modifier: Modifier
 private fun EndCallButton() {
     FilledTonalIconButton(
         onClick = {},
-        modifier = Modifier.width(160.dp).height(64.dp.adaptive()),
+        modifier = Modifier.width(160.dp).height(48.dp.adaptive()),
         colors =
             IconButtonDefaults.filledIconButtonColors(
                 containerColor = Color.Red,
