@@ -109,7 +109,7 @@ private fun ShadyButtonInternal(
                 .padding(SHADY_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer({
+        SeparateLayer{
             Text(
                 text = label.uppercase(),
                 color = Color.White,
@@ -117,7 +117,7 @@ private fun ShadyButtonInternal(
                 fontWeight = FontWeight.Thin,
                 fontFamily = bungee,
             )
-        })
+        }
     }
 }
 

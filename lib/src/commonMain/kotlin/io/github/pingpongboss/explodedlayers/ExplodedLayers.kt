@@ -263,7 +263,7 @@ fun Modifier.separateLayer(): Modifier {
  * @param content The composable content to render in a separate layer.
  */
 @Composable
-fun SeparateLayer(content: @Composable () -> Unit) {
+fun SeparateLayer(modifier: Modifier = Modifier, content: @Composable () -> Unit) {
     val state = LocalExplodedLayersState.current ?: return content()
     val instanceState = LocalInstanceState.current ?: return content()
     val inOverlay = LocalInOverlay.current
@@ -286,7 +286,8 @@ fun SeparateLayer(content: @Composable () -> Unit) {
 
     Box(
         modifier =
-            Modifier.thenIf(!inOverlay) {
+            modifier
+                .thenIf(!inOverlay) {
                     onGloballyPositioned {
                         overlayLayer.windowPosition = it.positionInWindow()
                         overlayLayer.windowSize = it.size

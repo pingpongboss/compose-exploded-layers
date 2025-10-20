@@ -127,7 +127,7 @@ fun CreepButtonInternal(
                 .padding(CREEP_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer({
+        SeparateLayer{
             Text(
                 text = label.uppercase(),
                 fontSize = 24.sp,
@@ -135,7 +135,7 @@ fun CreepButtonInternal(
                 color = Color.White,
                 fontFamily = creepster,
             )
-        })
+        }
     }
 }
 

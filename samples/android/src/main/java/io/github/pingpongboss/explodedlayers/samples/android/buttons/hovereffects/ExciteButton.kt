@@ -138,7 +138,7 @@ private fun ExciteButtonInternal(
             pressedTransition.animateColor(label = "fontColor") { pressed ->
                 if (pressed) Color.White else Color.Black
             }
-        SeparateLayer({
+        SeparateLayer{
             Text(
                 modifier = Modifier.scale(fontScale),
                 text = label.uppercase(),
@@ -147,7 +147,7 @@ private fun ExciteButtonInternal(
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
             )
-        })
+        }
     }
 }
 

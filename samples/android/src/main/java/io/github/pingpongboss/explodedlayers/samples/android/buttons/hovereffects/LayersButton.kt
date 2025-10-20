@@ -108,14 +108,14 @@ private fun LayersButtonInternal(
                 .padding(LAYER_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer({
+        SeparateLayer{
             Text(
                 text = label.uppercase(),
                 fontFamily = montserrat,
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
             )
-        })
+        }
     }
 }
 
