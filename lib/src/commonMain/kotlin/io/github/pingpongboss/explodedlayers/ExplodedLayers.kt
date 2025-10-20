@@ -44,7 +44,14 @@ import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.OnTop
 import kotlin.math.PI
 import kotlin.math.tan
 
-private val LocalState = compositionLocalOf<ExplodedLayersState?> { null }
+/**
+ * Provides the current [ExplodedLayersState] to nested composables.
+ *
+ * Use this [compositionLocalOf] to access the state defined by the nearest [ExplodedLayersRoot]
+ * ancestor. Its value is `null` if no root is present in the composition hierarchy.
+ */
+val LocalExplodedLayersState = compositionLocalOf<ExplodedLayersState?> { null }
+
 private val LocalInstanceState = compositionLocalOf<ExplodedLayersInstanceState?> { null }
 private val LocalInOverlay = compositionLocalOf { false }
 
@@ -104,12 +111,14 @@ fun ExplodedLayersRoot(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    require(LocalState.current == null) { "You must not nest ExplodedLayersRoot() within itself." }
+    require(LocalExplodedLayersState.current == null) {
+        "You must not nest ExplodedLayersRoot() within itself."
+    }
 
     val instanceState = remember { ExplodedLayersInstanceState() }
 
     CompositionLocalProvider(
-        LocalState provides state,
+        LocalExplodedLayersState provides state,
         LocalInstanceState provides instanceState,
         LocalInOverlay provides false,
     ) {
@@ -221,7 +230,7 @@ fun ExplodedLayersRoot(
  */
 @Composable
 fun Modifier.separateLayer(): Modifier {
-    val state = LocalState.current ?: return this
+    val state = LocalExplodedLayersState.current ?: return this
     val instanceState = LocalInstanceState.current ?: return this
 
     LaunchedEffect(Unit) { instanceState.numLayers++ }
@@ -255,7 +264,7 @@ fun Modifier.separateLayer(): Modifier {
  */
 @Composable
 fun SeparateLayer(content: @Composable () -> Unit) {
-    val state = LocalState.current ?: return content()
+    val state = LocalExplodedLayersState.current ?: return content()
     val instanceState = LocalInstanceState.current ?: return content()
     val inOverlay = LocalInOverlay.current
 
