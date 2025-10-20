@@ -60,6 +60,8 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
+import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.OnTop
+import io.github.pingpongboss.explodedlayers.LocalExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
 import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.MessagesItem
 import io.github.pingpongboss.explodedlayers.samples.common.ConversationItem.MessagesItem.MessageItem
@@ -274,6 +276,7 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
                                         conversationItems += suggestions
                                     }
                                 },
+                                scrolledToBottom = !scrollState.canScrollForward,
                             )
                         }
                     }
@@ -347,6 +350,7 @@ private fun SuggestionsRow(
     suggestions: List<MagicCueSuggestionItem>,
     modifier: Modifier,
     onSuggestionClicked: (String) -> Unit,
+    scrolledToBottom: Boolean,
 ) {
     val scrollState = rememberScrollState()
 
@@ -356,7 +360,11 @@ private fun SuggestionsRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             for (suggestion in suggestions) {
-                MagicCueChip(suggestion = suggestion, onSuggestionClicked = onSuggestionClicked)
+                MagicCueChip(
+                    suggestion = suggestion,
+                    onSuggestionClicked = onSuggestionClicked,
+                    scrolledToBottom = scrolledToBottom,
+                )
             }
         }
     }
@@ -366,12 +374,22 @@ private fun SuggestionsRow(
 private fun MagicCueChip(
     suggestion: MagicCueSuggestionItem,
     onSuggestionClicked: (String) -> Unit,
+    scrolledToBottom: Boolean,
 ) {
     val shape = RoundedCornerShape(24.dp)
     Row(
         modifier =
             Modifier.clip(shape)
-                .border(1.dp, Color.Yellow, shape)
+                .border(
+                    width = 1.dp,
+                    color =
+                        when {
+                            LocalExplodedLayersState.current?.zOrder == OnTop -> Color.Yellow
+                            scrolledToBottom -> Color.Yellow
+                            else -> MaterialTheme.colorScheme.outline
+                        },
+                    shape = shape,
+                )
                 .background(color = MaterialTheme.colorScheme.surface)
                 .clickable { onSuggestionClicked(suggestion.label) }
                 .padding(8.dp),
