@@ -250,7 +250,7 @@ private fun ConversationList(modifier: Modifier, footerHeight: Int?) {
                                 modifier = Modifier.align(Alignment.End),
                                 onSuggestionClicked = { suggestion ->
                                     scope.launch {
-                                        delay(500.milliseconds)
+                                        delay(300.milliseconds)
 
                                         // Hide the suggestions.
                                         val suggestions = conversationItems.removeLast()
