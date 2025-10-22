@@ -166,6 +166,7 @@ jobs:
           SECTION+="curl -L -O $DOWNLOAD_PREFIX/$APK_FILE"$'\n'
           SECTION+="adb install $APK_FILE"$'\n'
           SECTION+=$'```\n'
+          SECTION+=$'To build from source, run: `./gradlew :samples:android:installDebug`\n'
 
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
@@ -198,7 +199,9 @@ jobs:
         run: |
           DEMO_URL="https://pingpongboss.github.io/compose-exploded-layers/wasm-demo/${TAG}/"
           LINK_TEXT="wasm-demo-${TAG}"
-          SECTION=$'\n\n## 🌐 Web Demo\nTry this release directly in your browser (no install needed):\n\n'"[**Open ${LINK_TEXT} →**](${DEMO_URL})"
+          SECTION=$'\n\n## 🌐 Web Demo\nTry this release directly in your browser (no install needed):\n\n'
+          SECTION+="[**Open ${LINK_TEXT} →**](${DEMO_URL})"$'\n'
+          SECTION+=$'To build from source, run: `./gradlew :samples:wasm:wasmJsBrowserDevelopmentRun`\n'
           
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
@@ -250,6 +253,7 @@ jobs:
           SECTION+="curl -L -O $DOWNLOAD_PREFIX/$WINDOWS_FILE"$'\n'
           SECTION+="java -jar $WINDOWS_FILE"$'\n'
           SECTION+=$'```\n'
+          SECTION+=$'To build from source, run: `./gradlew :samples:jvm:run`\n'
           
           API_URL="https://api.github.com/repos/${REPO}/releases/tags/${TAG}"
           RELEASE_ID=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$API_URL" | jq -r .id)
