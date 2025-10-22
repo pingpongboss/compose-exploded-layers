@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Message
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.SmartButton
 import androidx.compose.material3.Icon
@@ -36,7 +35,6 @@ import io.github.pingpongboss.explodedlayers.samples.common.AppScreen
 import io.github.pingpongboss.explodedlayers.samples.common.ButtonsScreen
 import io.github.pingpongboss.explodedlayers.samples.common.DialerApp
 import io.github.pingpongboss.explodedlayers.samples.common.MessagesApp
-import io.github.pingpongboss.explodedlayers.samples.common.SimpleScreen
 import io.github.pingpongboss.explodedlayers.samples.common.dimension.Configuration
 import io.github.pingpongboss.explodedlayers.samples.common.dimension.LocalConfiguration
 import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
@@ -64,13 +62,6 @@ sealed class TabNavItem(
             icon = Icons.Default.SmartButton,
             label = "Buttons",
             content = { SampleTheme(darkTheme = false) { ButtonsScreen() } },
-        )
-
-    data object Simple :
-        TabNavItem(
-            icon = Icons.Default.Favorite,
-            label = "Simple",
-            content = { SimpleScreen(innerPadding = it) },
         )
 
     data object Dialer :
@@ -111,8 +102,7 @@ sealed class TabNavItem(
 @Composable
 fun TabNavigation(
     modifier: Modifier = Modifier,
-    tabs: List<TabNavItem> =
-        listOf(TabNavItem.Buttons, TabNavItem.Simple, TabNavItem.Dialer, TabNavItem.Messages),
+    tabs: List<TabNavItem> = listOf(TabNavItem.Buttons, TabNavItem.Dialer, TabNavItem.Messages),
     startDestinationLabel: String = TabNavItem.Buttons.label,
     header: @Composable () -> Unit = {
         Text(
