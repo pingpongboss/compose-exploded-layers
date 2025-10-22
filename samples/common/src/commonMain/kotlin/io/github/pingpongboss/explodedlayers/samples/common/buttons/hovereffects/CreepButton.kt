@@ -43,7 +43,7 @@ import androidx.compose.ui.unit.sp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.common.fonts.creepsterExtrabold
+import io.github.pingpongboss.explodedlayers.samples.common.theme.creepsterExtrabold
 import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -2,6 +2,7 @@ package io.github.pingpongboss.explodedlayers.samples.common.utils
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.PressInteraction
+import io.github.pingpongboss.explodedlayers.samples.common.platform.currentTimeMillis
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow

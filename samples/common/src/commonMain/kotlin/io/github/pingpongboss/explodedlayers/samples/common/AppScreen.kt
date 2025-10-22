@@ -39,9 +39,9 @@ import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.Behind
 import io.github.pingpongboss.explodedlayers.ExplodedLayersZOrder.OnTop
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
 import io.github.pingpongboss.explodedlayers.rememberGlassState
-import io.github.pingpongboss.explodedlayers.samples.common.animation.InfiniteAnimationEffect
-import io.github.pingpongboss.explodedlayers.samples.common.dimension.LocalConfiguration
-import io.github.pingpongboss.explodedlayers.samples.common.toggle.MultiToggle
+import io.github.pingpongboss.explodedlayers.samples.common.layout.MultiToggle
+import io.github.pingpongboss.explodedlayers.samples.common.utils.InfiniteAnimationEffect
+import io.github.pingpongboss.explodedlayers.samples.common.utils.LocalConfiguration
 
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 

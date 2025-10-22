@@ -53,9 +53,9 @@ import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
-import io.github.pingpongboss.explodedlayers.samples.common.fonts.pixelifySansRegular
-import io.github.pingpongboss.explodedlayers.samples.common.utils.applyBlur
-import io.github.pingpongboss.explodedlayers.samples.common.utils.applyShader
+import io.github.pingpongboss.explodedlayers.samples.common.platform.applyBlur
+import io.github.pingpongboss.explodedlayers.samples.common.platform.applyShader
+import io.github.pingpongboss.explodedlayers.samples.common.theme.pixelifySansRegular
 import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi

@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavigation
-import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.TabNavigation
+import io.github.pingpongboss.explodedlayers.samples.common.platform.SampleTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

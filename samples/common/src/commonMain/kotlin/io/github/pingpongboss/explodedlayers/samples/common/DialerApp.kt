@@ -39,7 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.common.dimension.adaptive
+import io.github.pingpongboss.explodedlayers.samples.common.utils.adaptive
 
 @Composable
 fun DialerApp() {

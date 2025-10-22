@@ -36,7 +36,6 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
-import io.github.pingpongboss.explodedlayers.samples.common.animation.InfiniteAnimationEffect
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.CreepButton
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ExciteButton
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ExpandButton
@@ -44,7 +43,8 @@ import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.LayersButton
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ShadyButton
 import io.github.pingpongboss.explodedlayers.samples.common.buttons.keycap.KeycapButton
-import io.github.pingpongboss.explodedlayers.samples.common.grid.Grid
+import io.github.pingpongboss.explodedlayers.samples.common.layout.Grid
+import io.github.pingpongboss.explodedlayers.samples.common.utils.InfiniteAnimationEffect
 import kotlinx.coroutines.launch
 
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE

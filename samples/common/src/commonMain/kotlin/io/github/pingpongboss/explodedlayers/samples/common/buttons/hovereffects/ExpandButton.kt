@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.common.fonts.leagueSpartanRegular
+import io.github.pingpongboss.explodedlayers.samples.common.theme.leagueSpartanRegular
 import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.compose.ui.tooling.preview.Preview

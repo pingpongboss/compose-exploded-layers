@@ -26,15 +26,6 @@ internal val LightColorScheme =
         */
     )
 
-@Composable expect fun isPlatformInDarkTheme(): Boolean
-
-@Composable
-expect fun SampleTheme(
-    darkTheme: Boolean = isPlatformInDarkTheme(),
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit,
-)
-
 @Composable
 internal fun SampleThemeBase(
     darkTheme: Boolean,

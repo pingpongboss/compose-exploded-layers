@@ -27,8 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
@@ -42,8 +40,8 @@ import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.common.fonts.montserratRegular
-import io.github.pingpongboss.explodedlayers.samples.common.utils.applyBlur
+import io.github.pingpongboss.explodedlayers.samples.common.platform.applyBlur
+import io.github.pingpongboss.explodedlayers.samples.common.theme.montserratRegular
 import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -207,7 +205,7 @@ private fun Modifier.drawShadow(
                     bottom = size.height,
                     radiusX = cornerRadius.x,
                     radiusY = cornerRadius.y,
-                    paint = paint
+                    paint = paint,
                 )
             }
         }

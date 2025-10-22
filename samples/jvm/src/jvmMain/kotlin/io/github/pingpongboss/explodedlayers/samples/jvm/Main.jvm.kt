@@ -6,8 +6,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import io.github.pingpongboss.explodedlayers.samples.common.navigation.TabNavigation
-import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.TabNavigation
+import io.github.pingpongboss.explodedlayers.samples.common.platform.SampleTheme
 
 fun main() = application {
     Window(
