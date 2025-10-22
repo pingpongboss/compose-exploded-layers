@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.grid
+package io.github.pingpongboss.explodedlayers.samples.common.grid
 
 import androidx.annotation.IntRange
 import androidx.compose.foundation.layout.Arrangement

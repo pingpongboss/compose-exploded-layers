@@ -24,6 +24,9 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":lib"))
 
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
+
             implementation(compose.ui)
             implementation(compose.foundation)
             implementation(compose.material3)

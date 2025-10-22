@@ -1,9 +1,5 @@
-package io.github.pingpongboss.explodedlayers.samples.android.buttons.keycap
+package io.github.pingpongboss.explodedlayers.samples.common.buttons.keycap
 
-import android.graphics.BlurMaskFilter
-import android.graphics.Matrix
-import android.graphics.Shader
-import android.widget.Toast
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -35,23 +31,20 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Matrix
 import androidx.compose.ui.graphics.Paint
+import androidx.compose.ui.graphics.PaintingStyle
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SweepGradientShader
-import androidx.compose.ui.graphics.asAndroidPath
 import androidx.compose.ui.graphics.copy
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -60,10 +53,13 @@ import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
-import io.github.pingpongboss.explodedlayers.samples.android.fonts.pixelifySans
-import io.github.pingpongboss.explodedlayers.samples.android.utils.transformToPressedState
+import io.github.pingpongboss.explodedlayers.samples.common.fonts.pixelifySansRegular
+import io.github.pingpongboss.explodedlayers.samples.common.utils.applyBlur
+import io.github.pingpongboss.explodedlayers.samples.common.utils.applyShader
+import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Duration.Companion.milliseconds
 
 private val GLASS_BUTTON_OUTER_PADDING = 8.dp
@@ -190,7 +186,7 @@ private fun KeycapButtonInternal(
                 Text(
                     text = label,
                     modifier = Modifier,
-                    fontFamily = pixelifySans,
+                    fontFamily = pixelifySansRegular(),
                     color = Color.White,
                     fontSize = 20.sp,
                 )
@@ -322,32 +318,24 @@ private fun Modifier.drawAnimatedGlow(
     return drawBehind {
         drawIntoCanvas { canvas ->
             val paint =
-                Paint().asFrameworkPaint().apply {
+                Paint().apply {
                     isAntiAlias = true
-                    style = android.graphics.Paint.Style.FILL
-                    shader =
-                        SweepGradientShader(
-                            center = Offset(size.width / 2f, size.height / 2f),
-                            colors = animatedGlowColors,
-                            colorStops = null,
-                        )
+                    style = PaintingStyle.Fill
 
-                    val matrix =
-                        Matrix().apply {
-                            // Rotate first
-                            setRotate(rotation, center.x, center.y)
-                            // Stretch horizontally (or vertically) to match button aspect ratio
-                            val scaleX = size.width / size.height
-                            val scaleY = 1f
-                            postScale(scaleX, scaleY, center.x, center.y)
-                        }
-                    (shader as Shader).setLocalMatrix(matrix)
+                    applyShader(
+                        paint = this,
+                        shader =
+                            SweepGradientShader(
+                                center = Offset(size.width / 2f, size.height / 2f),
+                                colors = animatedGlowColors,
+                            ),
+                        rotation = rotation,
+                    )
 
-                    maskFilter =
-                        BlurMaskFilter(
-                            ANIMATED_GLOW_BLUR_RADIUS * blurRadiusScale,
-                            BlurMaskFilter.Blur.NORMAL,
-                        )
+                    applyBlur(
+                        paint = this,
+                        blurRadius = ANIMATED_GLOW_BLUR_RADIUS * blurRadiusScale,
+                    )
                 }
 
             canvas.drawRoundRect(
@@ -357,7 +345,7 @@ private fun Modifier.drawAnimatedGlow(
                 bottom = size.height + ANIMATED_GLOW_OUTER_OFFSET - outerShrinkOffset.y.toPx(),
                 radiusX = borderRadius.toPx(),
                 radiusY = borderRadius.toPx(),
-                paint = Paint().apply { asFrameworkPaint().set(paint) },
+                paint = paint,
             )
         }
     }
@@ -380,28 +368,26 @@ private fun Modifier.drawOuterShadow(enabled: Boolean, cornerRadius: Dp): Modifi
         val shadowPath =
             shapePath.copy().apply {
                 val matrix = Matrix()
-                matrix.setScale(1.01f, 1.0f, w / 2f, 0f)
-                matrix.postTranslate(0f, OUTER_SHADOW_ELEVATION.toPx())
 
-                val androidPath = asAndroidPath()
-                androidPath.transform(matrix)
+                matrix.translate(x = w / 2f)
+                matrix.scale(x = 1.01f, y = 1.0f)
+                matrix.translate(x = -w / 2f)
+
+                matrix.translate(y = OUTER_SHADOW_ELEVATION.toPx())
+
+                transform(matrix)
             }
 
         val maskedPath = Path().apply { op(shadowPath, shapePath, PathOperation.Difference) }
 
         drawIntoCanvas { canvas ->
             val paint =
-                Paint().asFrameworkPaint().apply {
+                Paint().apply {
                     isAntiAlias = true
-                    color = android.graphics.Color.TRANSPARENT
-                    setShadowLayer(
-                        4f, // blur radius
-                        0f, // offsetX
-                        0f, // offsetY
-                        Color.Black.copy(alpha = .2f).toArgb(),
-                    )
+                    color = Color.Black.copy(alpha = .2f)
+                    applyBlur(this, 4f)
                 }
-            canvas.nativeCanvas.drawPath(maskedPath.asAndroidPath(), paint)
+            canvas.drawPath(maskedPath, paint)
         }
     }
 }
@@ -410,11 +396,10 @@ private fun Modifier.drawOuterShadow(enabled: Boolean, cornerRadius: Dp): Modifi
 @Composable
 fun KeycapButtonPreview() {
     Box(modifier = Modifier.padding(8.dp), contentAlignment = Alignment.Center) {
-        val context = LocalContext.current
         val interactionSource = remember { MutableInteractionSource() }
         KeycapButtonInternal(
             label = "+ Add to cart",
-            onClick = { Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show() },
+            onClick = {},
             interactionSource = interactionSource,
             keycapScale = 1f,
             animatedGlowOuterShrinkOffset = DpOffset.Zero,
@@ -429,11 +414,10 @@ fun KeycapButtonPreview() {
 @Composable
 fun KeycapButtonPreviewPressed() {
     Box(modifier = Modifier.padding(8.dp), contentAlignment = Alignment.Center) {
-        val context = LocalContext.current
         val interactionSource = remember { MutableInteractionSource() }
         KeycapButtonInternal(
             label = "+ Add to cart",
-            onClick = { Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show() },
+            onClick = {},
             interactionSource = interactionSource,
             keycapScale = PRESSED_KEYCAP_SCALE,
             animatedGlowOuterShrinkOffset = PRESSED_ANIMATED_GLOW_OUTER_SHRINK_OFFSET,

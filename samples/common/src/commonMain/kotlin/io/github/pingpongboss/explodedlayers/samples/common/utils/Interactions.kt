@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.utils
+package io.github.pingpongboss.explodedlayers.samples.common.utils
 
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.PressInteraction
@@ -28,7 +28,7 @@ fun Flow<Interaction>.transformToPressedState(minPressedDuration: Duration): Flo
     var lastPressedTime = 0L
     return mapNotNull { it.isPressed() }
         .flatMapLatest { pressed ->
-            val now = System.currentTimeMillis()
+            val now = currentTimeMillis()
             if (pressed) lastPressedTime = now
             flowOf(pressed).onStart {
                 if (!pressed) {

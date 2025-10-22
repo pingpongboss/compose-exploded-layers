@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.utils
+package io.github.pingpongboss.explodedlayers.samples.common.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android
+package io.github.pingpongboss.explodedlayers.samples.common
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.layout.Arrangement
@@ -32,21 +32,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.rememberExplodedLayersState
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.CreepButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.ExciteButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.ExpandButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.GradientButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.LayersButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects.ShadyButton
-import io.github.pingpongboss.explodedlayers.samples.android.buttons.keycap.KeycapButton
-import io.github.pingpongboss.explodedlayers.samples.android.grid.Grid
 import io.github.pingpongboss.explodedlayers.samples.common.animation.InfiniteAnimationEffect
-import io.github.pingpongboss.explodedlayers.samples.common.theme.SampleTheme
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.CreepButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ExciteButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ExpandButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.GradientButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.LayersButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects.ShadyButton
+import io.github.pingpongboss.explodedlayers.samples.common.buttons.keycap.KeycapButton
+import io.github.pingpongboss.explodedlayers.samples.common.grid.Grid
 import kotlinx.coroutines.launch
 
 private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
@@ -244,10 +242,4 @@ private fun SampleGrid(
             ExciteButton(label = "Excite", onClick = {}, explodedLayersState = explodedLayersState2)
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun SampleRootPreview() {
-    SampleTheme { ButtonsScreen() }
 }

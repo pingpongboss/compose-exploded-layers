@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.samples.common.AppScreen
+import io.github.pingpongboss.explodedlayers.samples.common.ButtonsScreen
 import io.github.pingpongboss.explodedlayers.samples.common.DialerApp
 import io.github.pingpongboss.explodedlayers.samples.common.MessagesApp
 import io.github.pingpongboss.explodedlayers.samples.common.SimpleScreen
@@ -58,12 +59,12 @@ sealed class TabNavItem(
     val content: @Composable (innerPadding: PaddingValues) -> Unit,
 ) {
 
-    class Buttons(content: @Composable (innerPadding: PaddingValues) -> Unit) :
-        TabNavItem(icon = Icons.Default.SmartButton, label = label, content = content) {
-        companion object {
-            const val label = "Buttons"
-        }
-    }
+    data object Buttons :
+        TabNavItem(
+            icon = Icons.Default.SmartButton,
+            label = "Buttons",
+            content = { SampleTheme(darkTheme = false) { ButtonsScreen() } },
+        )
 
     data object Simple :
         TabNavItem(
@@ -110,8 +111,9 @@ sealed class TabNavItem(
 @Composable
 fun TabNavigation(
     modifier: Modifier = Modifier,
-    tabs: List<TabNavItem> = listOf(TabNavItem.Simple, TabNavItem.Dialer, TabNavItem.Messages),
-    startDestinationLabel: String = TabNavItem.Simple.label,
+    tabs: List<TabNavItem> =
+        listOf(TabNavItem.Buttons, TabNavItem.Simple, TabNavItem.Dialer, TabNavItem.Messages),
+    startDestinationLabel: String = TabNavItem.Buttons.label,
     header: @Composable () -> Unit = {
         Text(
             modifier = Modifier.padding(horizontal = 16.dp),

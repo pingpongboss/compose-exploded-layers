@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects
+package io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects
 
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateDp
@@ -32,15 +32,15 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.android.fonts.leagueSpartan
-import io.github.pingpongboss.explodedlayers.samples.android.utils.transformToPressedState
+import io.github.pingpongboss.explodedlayers.samples.common.fonts.leagueSpartanRegular
+import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -104,10 +104,10 @@ fun ExpandButtonInternal(
                 .padding(EXPAND_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer{
+        SeparateLayer {
             Text(
                 text = label.uppercase(),
-                fontFamily = leagueSpartan,
+                fontFamily = leagueSpartanRegular(),
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 20.sp,
                 color = Color.White,

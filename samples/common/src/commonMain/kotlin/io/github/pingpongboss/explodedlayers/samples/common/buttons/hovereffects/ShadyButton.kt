@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects
+package io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -29,16 +29,16 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.android.fonts.bungee
-import io.github.pingpongboss.explodedlayers.samples.android.utils.transformToPressedState
+import io.github.pingpongboss.explodedlayers.samples.common.fonts.bungeeRegular
+import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Duration.Companion.milliseconds
 
 private val SHADY_BUTTON_MIN_WIDTH = 160.dp
@@ -109,13 +109,13 @@ private fun ShadyButtonInternal(
                 .padding(SHADY_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer{
+        SeparateLayer {
             Text(
                 text = label.uppercase(),
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Thin,
-                fontFamily = bungee,
+                fontFamily = bungeeRegular(),
             )
         }
     }

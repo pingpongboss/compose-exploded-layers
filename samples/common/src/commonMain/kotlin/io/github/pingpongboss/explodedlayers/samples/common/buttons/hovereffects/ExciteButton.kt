@@ -1,4 +1,4 @@
-package io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects
+package io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects
 
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.Spring
@@ -40,16 +40,17 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.android.fonts.montserrat
-import io.github.pingpongboss.explodedlayers.samples.android.utils.transformToPressedState
+import io.github.pingpongboss.explodedlayers.samples.common.fonts.montserratRegular
+import io.github.pingpongboss.explodedlayers.samples.common.utils.Math.toRadians
+import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.min
@@ -138,11 +139,11 @@ private fun ExciteButtonInternal(
             pressedTransition.animateColor(label = "fontColor") { pressed ->
                 if (pressed) Color.White else Color.Black
             }
-        SeparateLayer{
+        SeparateLayer {
             Text(
                 modifier = Modifier.scale(fontScale),
                 text = label.uppercase(),
-                fontFamily = montserrat,
+                fontFamily = montserratRegular(),
                 color = fontColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold,
@@ -280,7 +281,7 @@ private fun shapePath(
 
     // Build shape path: alternate outer and inner points
     val step = (2.0 * PI / (points * 2)).toFloat() // angle between adjacent outer/inner in radians
-    val startAngle = Math.toRadians(rotationDegrees.toDouble()).toFloat()
+    val startAngle = toRadians(rotationDegrees.toDouble()).toFloat()
 
     for (i in 0 until points * 2) {
         val isOuter = i % 2 == 0

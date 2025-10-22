@@ -1,9 +1,5 @@
-package io.github.pingpongboss.explodedlayers.samples.android.buttons.hovereffects
+package io.github.pingpongboss.explodedlayers.samples.common.buttons.hovereffects
 
-import android.graphics.BlurMaskFilter
-import android.graphics.LinearGradient
-import android.graphics.RectF
-import android.graphics.Shader
 import androidx.compose.animation.core.FiniteAnimationSpec
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
@@ -31,25 +27,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.github.pingpongboss.explodedlayers.ExplodedLayersRoot
 import io.github.pingpongboss.explodedlayers.ExplodedLayersState
 import io.github.pingpongboss.explodedlayers.SeparateLayer
-import io.github.pingpongboss.explodedlayers.samples.android.fonts.montserrat
-import io.github.pingpongboss.explodedlayers.samples.android.utils.transformToPressedState
+import io.github.pingpongboss.explodedlayers.samples.common.fonts.montserratRegular
+import io.github.pingpongboss.explodedlayers.samples.common.utils.applyBlur
+import io.github.pingpongboss.explodedlayers.samples.common.utils.transformToPressedState
 import io.github.pingpongboss.explodedlayers.separateLayer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import kotlin.time.Duration.Companion.milliseconds
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -117,11 +115,11 @@ fun GradientButtonInternal(
                 .padding(GRADIENT_BUTTON_INNER_PADDING),
         contentAlignment = Alignment.Center,
     ) {
-        SeparateLayer{
+        SeparateLayer {
             Text(
                 text = label.uppercase(),
                 color = Color.White,
-                fontFamily = montserrat,
+                fontFamily = montserratRegular(),
                 fontWeight = FontWeight.Bold,
             )
         }
@@ -182,38 +180,36 @@ private fun Modifier.drawShadow(
     return drawBehind {
         val cornerRadius = CornerRadius(size.height / 2f)
 
-        drawIntoCanvas { canvas ->
-            val paint =
-                Paint().asFrameworkPaint().apply {
-                    isAntiAlias = true
+        // Only draw the diffuse gradient shadow when blur would be active
+        if (diffuseShadowBlurRadius > 0f) {
+            drawIntoCanvas { canvas ->
+                val paint =
+                    Paint().apply {
+                        isAntiAlias = true
 
-                    // Create a linear gradient shader
-                    shader =
-                        LinearGradient(
-                            0f,
-                            0f,
-                            size.width,
-                            size.height,
-                            GRADIENT_BUTTON_SHADOW_DIFFUSE_COLORS.map { it.toArgb() }.toIntArray(),
-                            null,
-                            Shader.TileMode.CLAMP,
-                        )
+                        // Create a linear gradient shader
+                        shader =
+                            LinearGradientShader(
+                                from = Offset.Zero,
+                                to = Offset(size.width, size.height),
+                                colors = GRADIENT_BUTTON_SHADOW_DIFFUSE_COLORS,
+                                colorStops = null,
+                            )
 
-                    // Add blur
-                    if (diffuseShadowBlurRadius > 0f) {
-                        maskFilter =
-                            BlurMaskFilter(diffuseShadowBlurRadius, BlurMaskFilter.Blur.NORMAL)
+                        applyBlur(this, diffuseShadowBlurRadius)
                     }
-                }
 
-            // Draw a round rect using the paint
-            val rect = RectF(0f + shadowOffset, 0f, size.width, size.height)
-            canvas.nativeCanvas.drawRoundRect(
-                rect,
-                cornerRadius.x, // corner radius X
-                cornerRadius.y, // corner radius Y
-                paint,
-            )
+                // Draw a round rect using correct parameters
+                canvas.drawRoundRect(
+                    left = 0f + shadowOffset,
+                    top = 0f,
+                    right = size.width,
+                    bottom = size.height,
+                    radiusX = cornerRadius.x,
+                    radiusY = cornerRadius.y,
+                    paint = paint
+                )
+            }
         }
 
         drawRoundRect(
