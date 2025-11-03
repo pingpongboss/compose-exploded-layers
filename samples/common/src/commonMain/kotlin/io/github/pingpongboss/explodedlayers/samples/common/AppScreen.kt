@@ -43,8 +43,6 @@ import io.github.pingpongboss.explodedlayers.samples.common.layout.MultiToggle
 import io.github.pingpongboss.explodedlayers.samples.common.utils.InfiniteAnimationEffect
 import io.github.pingpongboss.explodedlayers.samples.common.utils.LocalConfiguration
 
-private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
-
 @Composable
 fun AppScreen(innerPadding: PaddingValues, content: @Composable () -> Unit) {
     val glassState =
@@ -59,7 +57,7 @@ fun AppScreen(innerPadding: PaddingValues, content: @Composable () -> Unit) {
         rememberExplodedLayersState(
             interactive = false,
             initialZOrder = OnTop,
-            initialSpread = MIN_SLIDER_VALUE,
+            initialSpread = Float.MIN_VALUE,
             glassState = glassState,
         )
 
@@ -159,7 +157,7 @@ private fun AppAnimationControls(state: ExplodedLayersState) {
         value = state.spread,
         onValueChange = { state.spread = it },
         onValueChangeFinished = { isAnimating = false },
-        valueRange = MIN_SLIDER_VALUE..1f,
+        valueRange = Float.MIN_VALUE..1f,
     )
 }
 

@@ -47,7 +47,6 @@ import io.github.pingpongboss.explodedlayers.samples.common.layout.Grid
 import io.github.pingpongboss.explodedlayers.samples.common.utils.InfiniteAnimationEffect
 import kotlinx.coroutines.launch
 
-private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 private val EXPLODED_LAYERS_STATE_1_INITIAL_OFFSET = DpOffset(x = -40.dp, y = 40.dp)
 private val EXPLODED_LAYERS_STATE_2_INITIAL_OFFSET = DpOffset(x = -20.dp, y = 20.dp)
 
@@ -168,11 +167,11 @@ private fun SampleGrid(
                     value = explodedLayersState1.spread,
                     onValueChange = { explodedLayersState1.spread = it },
                     onValueChangeFinished = {
-                        if (explodedLayersState1.spread == MIN_SLIDER_VALUE) {
+                        if (explodedLayersState1.spread == Float.MIN_VALUE) {
                             explodedLayersState1.spread = 0f
                         }
                     },
-                    valueRange = MIN_SLIDER_VALUE..1f,
+                    valueRange = Float.MIN_VALUE..1f,
                 )
             }
         }
@@ -200,11 +199,11 @@ private fun SampleGrid(
                     value = explodedLayersState2.spread,
                     onValueChange = { explodedLayersState2.spread = it },
                     onValueChangeFinished = {
-                        if (explodedLayersState2.spread == MIN_SLIDER_VALUE) {
+                        if (explodedLayersState2.spread == Float.MIN_VALUE) {
                             explodedLayersState2.spread = 0f
                         }
                     },
-                    valueRange = MIN_SLIDER_VALUE..1f,
+                    valueRange = Float.MIN_VALUE..1f,
                 )
             }
         }

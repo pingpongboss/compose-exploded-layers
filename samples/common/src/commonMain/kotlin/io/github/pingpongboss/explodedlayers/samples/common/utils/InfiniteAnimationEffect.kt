@@ -5,11 +5,12 @@ import androidx.compose.animation.core.AnimationVector1D
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.isActive
 import kotlin.time.Duration.Companion.seconds
-
-private const val MIN_SLIDER_VALUE = 1f / Float.MAX_VALUE
 
 @Composable
 fun InfiniteAnimationEffect(
@@ -17,25 +18,24 @@ fun InfiniteAnimationEffect(
     animatable: Animatable<Float, AnimationVector1D>,
     onAnimationUpdate: (Float) -> Unit = {},
 ) {
-    LaunchedEffect(enabled) {
+    LaunchedEffect(enabled, animatable) {
         if (enabled) {
-            launch {
-                while (true) {
-                    animatable.animateTo(
-                        targetValue = 1f,
-                        animationSpec = tween(durationMillis = 2000),
-                    )
-                    delay(1.seconds)
-                    animatable.animateTo(
-                        targetValue = MIN_SLIDER_VALUE,
-                        animationSpec = tween(durationMillis = 2000),
-                    )
-                    delay(1.seconds)
-                }
+            while (isActive) {
+                animatable.animateTo(targetValue = 1f, animationSpec = tween(durationMillis = 2000))
+                delay(1.seconds)
+                animatable.animateTo(
+                    targetValue = Float.MIN_VALUE,
+                    animationSpec = tween(durationMillis = 2000),
+                )
+                delay(1.seconds)
             }
         }
     }
-    if (enabled) {
-        onAnimationUpdate(animatable.value)
+
+    val latestOnUpdate by rememberUpdatedState(onAnimationUpdate)
+    LaunchedEffect(enabled, animatable) {
+        if (enabled) {
+            snapshotFlow { animatable.value }.collect { latestOnUpdate(it) }
+        }
     }
 }

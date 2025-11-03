@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -133,7 +134,7 @@ fun ExplodedLayersRoot(
             }
         }
 
-        val holes: MutableList<Rect> = mutableStateListOf()
+        val holes = mutableStateListOf<Rect>()
 
         with(LocalDensity.current) {
             OverlayBox(
@@ -461,6 +462,7 @@ sealed class ExplodedLayersZOrder(internal val sign: Int) {
  * @property interactive Whether the exploded layers can be interactively dragged by the user.
  * @property initialOffset The initial offset.
  */
+@Stable
 class ExplodedLayersState
 internal constructor(
     val interactive: Boolean,

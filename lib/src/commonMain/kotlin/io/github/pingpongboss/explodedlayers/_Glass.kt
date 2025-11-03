@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.ZeroCornerSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -34,7 +35,7 @@ internal fun Modifier.glass(
     state: GlassState = rememberGlassState(),
     alpha: Float = 1f,
     isDragging: Boolean = false,
-    holes: List<Rect> = emptyList(),
+    holes: SnapshotStateList<Rect> = SnapshotStateList(),
 ): Modifier {
     val transition = rememberInfiniteTransition(label = "glassSweep")
     val sweepAnim by
